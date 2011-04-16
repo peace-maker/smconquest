@@ -1,0 +1,337 @@
+"Phrases"
+{
+        "Respawn in x seconds"
+        {
+                // 1: Seconds remaining until respawn
+                "ru"                    "Вы оживете через {1} секунд(у)."
+        }
+        "Contested"
+        {
+                "ru"                    "Вмешался противник"
+        }
+        "Need more players"
+        {
+                // 1: Number of players left needed to capture the flag
+                "ru"                    "Нужен(ны) еще {1} игрок(а)."
+        }
+        "Captured a flag"
+        {
+                // 1: Player name, 2: flag description
+                "ru"                    "{teamcolor}{1}{green} захватил флаг @ {olive}{2}{green}."
+        }
+        // This is a connector phrase.
+        // It's used to concatenate player names on multiple flag captures
+        // Name1, Name2 {and} Name3
+        "and"
+        {
+                "ru"                    "и"
+        }
+        "Multiple captured a flag"
+        {
+                // 1: List of player name, 2: flag description
+                "ru"                    "{1}{green} захватил флаг @ {olive}{2}{green}."
+        }
+        
+        "Class limit reached"
+        {
+                // 1: Class name
+                "ru"                    "Лимит для класса {default}{1}{green} уже достигнут. Выберите другой класс."
+        }
+        "Not enough money for weaponset"
+        {
+                "ru"                    "У вас недостаточно денег, чтобы купить эти оружия."
+        }
+        "Chose class"
+        {
+                // 1: Class name, 2: Weaponset name
+                "ru"                    "Ваш класс при респавне {default}{1}{green} Экиперовка: {default}{2}{green}."
+        }
+        "Select class"
+        {
+                "ru"                    "Выберите класс:"
+        }
+        "Select weapon set"
+        {
+                // 1: Class name
+                "ru"                    "Выберите {1} экиперовку:"
+        }
+        "Class introduction"
+        {
+                "ru"                    "Этот сервер использует плагин {olive}SM:Conquest{green}. Выберите свой класс и захватывайте флаги!"
+        }
+        "Apply class"
+        {
+                // 1: Class name, 2: Weaponset name
+                "ru"                    "Ваш класс: {default}{1}{green} Экиперовка: {default}{2}{green}"
+        }
+        "HE left"
+        {
+                // 1: Count of HE grenades left
+                "ru"                    "У вас осталось {lightgreen}{1}{green} гранат(а)"
+        }
+        "Flashbangs left"
+        {
+                // 1: Count of flashbangs left
+                "ru"                    "У вас осталось {lightgreen}{1}{green} flashbang(s)"
+        }
+        "Smokes left"
+        {
+                // 1: Count of smoke grenades left
+                "ru"                    "У вас осталось {lightgreen}{1}{green} дымовых(ая) гранат(а)"
+        }
+        
+        "Has to be alive"
+        {
+                "ru"                    "Вы должны быть живым, чтобы использовать эту команду."
+        }
+        "Not enough money"
+        {
+                // 1: Buymenu item
+                "ru"                    "У вас недостаточно денег для покупки {default}{1}{green}."
+        }
+        "HE bought"
+        {
+                // 1: Price, 2: amount of grenades in stack
+                "ru"                    "Вы купили {default}Гранату за (${1}){green} и теперь у вас {lightgreen}{2}{green} гранаты(а)."
+        }
+        "Flashbang bought"
+        {
+                // 1: Price, 2: amount of grenades in stack
+                "ru"                    "Вы купили {default}Flashbang за (${1}){green} и теперь у вас {lightgreen}{2}{green} flashbang(s)."
+        }
+        "Smoke bought"
+        {
+                // 1: Price, 2: amount of grenades in stack
+                "ru"                    "Вы купили {default}Дымовую Гранату за (${1}){green} и теперь у вас {lightgreen}{2}{green} дымовые(ая) гранаты(а)"
+        }
+        "Item bought"
+        {
+                // 1: item name
+                "ru"                    "Вы купили {default}{1}{green}."
+        }
+        "Select category"
+        {
+                "ru"                    "Меню покупок: Выберите категорию"
+        }
+        
+        "Administration"
+        {
+                "ru"                    "Администрирование"
+        }
+        "List flags"
+        {
+                "ru"                    "Список флагов на карте"
+        }
+        "Add flag"
+        {
+                "ru"                    "Добавить новый флаг"
+        }
+        "Debug mode"
+        {
+                "ru"                    "Режим отладки"
+        }
+        "Flags"
+        {
+                "ru"                    "Флаги"
+        }
+        "Edit Flag"
+        {
+                // 1: Flag description
+                "ru"                    "Изменить {1}"
+        }
+        "Change position"
+        {
+                "ru"                    "Изменить позицию"
+        }
+        "Rotate"
+        {
+                "ru"                    "Крутить"
+        }
+        "Teleport to flag"
+        {
+                "ru"                    "Телепортироваться к флагу"
+        }
+        "Change Zone Position 1"
+        {
+                "ru"                    "Изменить зону позиции 1"
+        }
+        "Change Zone Position 2"
+        {
+                "ru"                    "Изменить зону позиции 2"
+        }
+        "Rename"
+        {
+                "ru"                    "Переименовать"
+        }
+        "Both"
+        {
+                "ru"                    "Оба"
+        }
+        "Default Team"
+        {
+                "ru"                    "Команда по умолчанию"
+        }
+        "Required Players"
+        {
+                "ru"                    "Колличество игроков на флаг"
+        }
+        "Conquer Time"
+        {
+                "ru"                    "Время Захвата"
+        }
+        "Change sorting"
+        {
+                "ru"                    "Изменение сортировки"
+        }
+        "Delete"
+        {
+                "ru"                    "Удалить"
+        }
+        "Rotate flag"
+        {
+                // 1: Flag description
+                "ru"                    "Повернуть флаг \"{1}\" ...?
+        }
+        "To the left"
+        {
+                // 1: Stepsize to add/subtract from the rotation angle
+                "ru"                    "Влево (+{1})"
+        }
+        "To the right"
+        {
+                // 1: Stepsize to add/subtract from the rotation angle
+                "ru"                    "Вправо (+{1})"
+        }
+        "Set new position"
+        {
+                "ru"                    "Установить позицию нового флага ..?"
+        }
+        "Edit position"
+        {
+                // 1: Flag description
+                "ru"                    "Изменить позицию флага \"{1}\" на ..?"
+        }
+        "Where I stand"
+        {
+                "ru"                    "Место где я стою. Изменяет поворот флага."
+        }
+        "Where I aim at"
+        {
+                "ru"                    "Туда куда я навожу."
+        }
+        "Save"
+        {
+                "ru"                    "Сохранить"
+        }
+        "Insert before"
+        {
+                // 1: Flag description
+                "ru"                    "Вставить \"{1}\" перед ..?"
+        }
+        "Latest"
+        {
+                "ru"                    "Последним"
+        }
+        "Change zone"
+        {
+                // 1: Flag description
+                "ru"                    "Изменение триггера зоне \"{1}\""
+        }
+        "Add to"
+        {
+                // 1: Axis descriptor ("X", "Y" or "Z")
+                "ru"                    "Добавить {1}"
+        }
+        "Subtract from"
+        {
+                // 1: Axis descriptor ("X", "Y" or "Z")
+                "ru"                    "Убрать из {1}"
+        }
+        "Type new name"
+        {
+                // 1: Flag description
+                "ru"                    "Напиши новое название флага {olive}{1}{green} в чат. Напиши {default}!stop{green} чтобы отказаться."
+        }
+        "Type players required"
+        {
+                // 1: Flag description, 2: current setting
+                "ru"                    "Напиши необходимое количество игроков для захвата флага {olive}{1}{green} ({default}{2}{green}) в чат. Напиши {default}!stop{green} чтобы отказаться."
+        }
+        "Type conquer time"
+        {
+                // 1: Flag description, 2: current setting
+                "ru"                    "Напиши время захвата флага {olive}{1}{green} ({default}{2}{green}) в чат. Напиши {default}!stop{green} чтобы отказаться."
+        }
+        "Delete confirm"
+        {
+                // 1: Flag description
+                "ru"                    "Вы действительно хотите удалить флаг \"{1}\"?"
+        }
+        "Deletion aborted"
+        {
+                "ru"                    "Удаление прервано."
+        }
+        "Delete confirmation"
+        {
+                // 1: Flag description
+                "ru"                    "Флаг {olive}{1}{green} удален успешно."
+        }
+        "First set position"
+        {
+                "ru"                    "Сначала вы должны установить позицию."
+        }
+        "Type description"
+        {
+                "ru"                    "Пожалуйста введите описание флага. Напиши {default}!stop{green} чтобы отказаться."
+        }
+        "Aim at solid"
+        {
+                "ru"                    "Вы должны целиться на землю."
+        }
+        "Stop naming"
+        {
+                "ru"                    "Флаг удалён."
+        }
+        "Add confirmation"
+        {
+                // 1: Flag description
+                "ru"                    "Добавлен новый флаг {default}{1}{green}."
+        }
+        "Stopped renaming"
+        {
+                "ru"                    "Переименовывание флага остановлено."
+        }
+        "Name changed"
+        {
+                // 1: Old flag description, 2: New flag description
+                "ru"                    "Изменено с {olive}{1}{green} на {olive}{2}{green}."
+        }
+        "Stop required players"
+        {
+                "ru"                    "Настройки необходимых игроков остановлена."
+        }
+        "Required players out of range"
+        {
+                // 1: Upper limit (MAXPLAYERS), 2: Entered value
+                "ru"                    "Значение должно быть между {default}1{green} и {default}{1}{green}. Вы ввели {default}{2}{green}. Попробуйте еще раз."
+        }
+        "Required players changed"
+        {
+                // 1: Old value, 2: New value
+                "ru"                    "Изменены необходимые игроки с {default}{1}{green} на {default}{2}{green}."
+        }
+        "Stop conquer time"
+        {
+                "ru"                    "Установка времени захвата флага отменена."
+        }
+        "Conquer time out of range"
+        {
+                // 1: Entered value
+                "ru"                    "Значение должно быть не менее {default}1{green}. Вы ввели {default}{1}{green}. Попробуйте еще раз."
+        }
+        "Conquer time changed"
+        {
+                // 1: Old value, 2: New value
+                "ru"                    "Время захвата флага изменено с {default}{1}{green} на {default}{2}{green}."
+        }
+}

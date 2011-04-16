@@ -1,0 +1,373 @@
+"Phrases"
+{
+	"Respawn in x seconds"
+	{
+		// 1: Seconds remaining until respawn
+		"#format"		"{1:d}"
+		"en"			"Respawn in {1} second(s)."
+	}
+	"Contested"
+	{
+		"en"			"Contested"
+	}
+	"Need more players"
+	{
+		// 1: Number of players left needed to capture the flag
+		"#format"		"{1:d}"
+		"en"			"Need {1} more player(s)."
+	}
+	"Captured a flag"
+	{
+		// 1: Player name, 2: flag description
+		"#format"		"{1:s},{2:s}"
+		"en"			"{teamcolor}{1}{green} captured the flag @ {olive}{2}{green}."
+	}
+	// This is a connector phrase.
+	// It's used to concatenate player names on multiple flag captures
+	// Name1, Name2 {and} Name3
+	"and"
+	{
+		"en"			"and"
+	}
+	"Multiple captured a flag"
+	{
+		// 1: List of player name, 2: flag description
+		"#format"		"{1:s},{2:s}"
+		"en"			"{1}{green} captured the flag @ {olive}{2}{green}."
+	}
+	
+	"Class limit reached"
+	{
+		// 1: Class name
+		"#format"		"{1:s}"
+		"en"			"The limit for class {default}{1}{green} is already reached. Choose a different one."
+	}
+	"Not enough money for weaponset"
+	{
+		"en"			"You don't have enough money to buy that weaponset."
+	}
+	"Chose class"
+	{
+		// 1: Class name, 2: Weaponset name
+		"#format"		"{1:s},{2:s}"
+		"en"			"You're going to be a {default}{1}{green} with {default}{2}{green} the next time you spawn."
+	}
+	"Select class"
+	{
+		"en"			"Select class:"
+	}
+	"Select weapon set"
+	{
+		// 1: Class name
+		"#format"		"{1:s}"
+		"en"			"Select {1} weapon set:"
+	}
+	"Class introduction"
+	{
+		"en"			"This server is running {olive}SM:Conquest{green}. Choose your class and conquer all flags!"
+	}
+	"Apply class"
+	{
+		// 1: Class name, 2: Weaponset name
+		"#format"		"{1:s},{2:s}"
+		"en"			"You're now a {default}{1}{green} with {default}{2}{green}."
+	}
+	"HE left"
+	{
+		// 1: Count of HE grenades left
+		"#format"		"{1:d}"
+		"en"			"You've {lightgreen}{1}{green} he grenade(s) left."
+	}
+	"Flashbangs left"
+	{
+		// 1: Count of flashbangs left
+		"#format"		"{1:d}"
+		"en"			"You've {lightgreen}{1}{green} flashbang(s) left."
+	}
+	"Smokes left"
+	{
+		// 1: Count of smoke grenades left
+		"#format"		"{1:d}"
+		"en"			"You've {lightgreen}{1}{green} smoke grenade(s) left."
+	}
+	
+	"Has to be alive"
+	{
+		"en"			"You have to be alive to use this command."
+	}
+	"Not enough money"
+	{
+		// 1: Buymenu item
+		"#format"		"{1:s}"
+		"en"			"You don't have enough money to buy {default}{1}{green}."
+	}
+	"HE bought"
+	{
+		// 1: Price, 2: amount of grenades in stack
+		"#format"		"{1:d},{2:d}"
+		"en"			"You bought a {default}HE Grenade (${1}){green} and have {lightgreen}{2}{green} now."
+	}
+	"Flashbang bought"
+	{
+		// 1: Price, 2: amount of grenades in stack
+		"#format"		"{1:d},{2:d}"
+		"en"			"You bought a {default}Flashbang (${1}){green} and have {lightgreen}{2}{green} now."
+	}
+	"Smoke bought"
+	{
+		// 1: Price, 2: amount of grenades in stack
+		"#format"		"{1:d},{2:d}"
+		"en"			"You bought a {default}Smoke Grenade (${1}){green} and have {lightgreen}{2}{green} now."
+	}
+	"Item bought"
+	{
+		// 1: item name
+		"#format"		"{1:s}"
+		"en"			"You bought a {default}{1}{green}."
+	}
+	"Select category"
+	{
+		"en"			"Buy menu: Select category"
+	}
+	
+	"Administration"
+	{
+		"en"			"Administration"
+	}
+	"List flags"
+	{
+		"en"			"List flags on map"
+	}
+	"Add flag"
+	{
+		"en"			"Add new flag"
+	}
+	"Debug mode"
+	{
+		"en"			"Debug Mode"
+	}
+	"Flags"
+	{
+		"en"			"Flags"
+	}
+	"Edit Flag"
+	{
+		// 1: Flag description
+		"#format"		"{1:s}"
+		"en"			"Edit {1}"
+	}
+	"Change position"
+	{
+		"en"			"Change position"
+	}
+	"Rotate"
+	{
+		"en"			"Rotate"
+	}
+	"Teleport to flag"
+	{
+		"en"			"Teleport to flag"
+	}
+	"Change Zone Position 1"
+	{
+		"en"			"Change Zone Position 1"
+	}
+	"Change Zone Position 2"
+	{
+		"en"			"Change Zone Position 2"
+	}
+	"Rename"
+	{
+		"en"			"Rename"
+	}
+	"Both"
+	{
+		"en"			"Both"
+	}
+	"Default Team"
+	{
+		"en"			"Default Team"
+	}
+	"Required Players"
+	{
+		"en"			"Required Players"
+	}
+	"Conquer Time"
+	{
+		"en"			"Conquer Time"
+	}
+	"Change sorting"
+	{
+		"en"			"Change sorting"
+	}
+	"Delete"
+	{
+		"en"			"Delete"
+	}
+	"Rotate flag"
+	{
+		// 1: Flag description
+		"#format"		"{1:s}"
+		"en"			"Rotate flag \"{1}\" ...?
+	}
+	"To the left"
+	{
+		// 1: Stepsize to add/subtract from the rotation angle
+		"#format"		"{1:d}"
+		"en"			"To the left (+{1})"
+	}
+	"To the right"
+	{
+		// 1: Stepsize to add/subtract from the rotation angle
+		"#format"		"{1:d}"
+		"en"			"To the right (+{1})"
+	}
+	"Set new position"
+	{
+		"en"			"Set the position of the new flag to ..?"
+	}
+	"Edit position"
+	{
+		// 1: Flag description
+		"#format"		"{1:s}"
+		"en"			"Change position of flag \"{1}\" to ..?"
+	}
+	"Where I stand"
+	{
+		"en"			"Where I stand. Changes rotation either."
+	}
+	"Where I aim at"
+	{
+		"en"			"Where I aim at."
+	}
+	"Save"
+	{
+		"en"			"Save"
+	}
+	"Insert before"
+	{
+		// 1: Flag description
+		"#format"		"{1:s}"
+		"en"			"Insert \"{1}\" before ..?"
+	}
+	"Latest"
+	{
+		"en"			"Latest"
+	}
+	"Change zone"
+	{
+		// 1: Flag description
+		"#format"		"{1:s}"
+		"en"			"Change trigger zone of \"{1}\""
+	}
+	"Add to"
+	{
+		// 1: Axis descriptor ("X", "Y" or "Z")
+		"#format"		"{1:s}"
+		"en"			"Add to {1}"
+	}
+	"Subtract from"
+	{
+		// 1: Axis descriptor ("X", "Y" or "Z")
+		"#format"		"{1:s}"
+		"en"			"Subtract from {1}"
+	}
+	"Type new name"
+	{
+		// 1: Flag description
+		"#format"		"{1:s}"
+		"en"			"Type a new name for flag {olive}{1}{green} in chat. Type {default}!stop{green} to abort."
+	}
+	"Type players required"
+	{
+		// 1: Flag description, 2: current setting
+		"#format"		"{1:s},{2:d}"
+		"en"			"Type the amount of players required to conquer flag {olive}{1}{green} ({default}{2}{green}) in chat. Type {default}!stop{green} to abort."
+	}
+	"Type conquer time"
+	{
+		// 1: Flag description, 2: current setting
+		"#format"		"{1:s},{2:d}"
+		"en"			"Type the conquer time for flag {olive}{1}{green} ({default}{2}{green}) in chat. Type {default}!stop{green} to abort."
+	}
+	"Delete confirm"
+	{
+		// 1: Flag description
+		"#format"		"{1:s}"
+		"en"			"Do you really want to delete flag \"{1}\"?"
+	}
+	"Deletion aborted"
+	{
+		"en"			"Deletion aborted."
+	}
+	"Delete confirmation"
+	{
+		// 1: Flag description
+		"#format"		"{1:s}"
+		"en"			"Deleted flag {olive}{1}{green} successfully."
+	}
+	"First set position"
+	{
+		"en"			"You have to set a new position first."
+	}
+	"Type description"
+	{
+		"en"			"Please type a description for the flag. Type {default}!stop{green} to abort."
+	}
+	"Aim at solid"
+	{
+		"en"			"You have to aim at an solid object."
+	}
+	"Stop naming"
+	{
+		"en"			"Stopped naming. The flag has been removed."
+	}
+	"Add confirmation"
+	{
+		// 1: Flag description
+		"#format"		"{1:s}"
+		"en"			"Added a new flag {default}{1}{green}."
+	}
+	"Stopped renaming"
+	{
+		"en"			"Stopped renaming the flag."
+	}
+	"Name changed"
+	{
+		// 1: Old flag description, 2: New flag description
+		"#format"		"{1:s},{2:s}"
+		"en"			"Changed {olive}{1}{green} to {olive}{2}{green}."
+	}
+	"Stop required players"
+	{
+		"en"			"Stopped setting the required players."
+	}
+	"Required players out of range"
+	{
+		// 1: Upper limit (MAXPLAYERS), 2: Entered value
+		"#format"		"{1:d},{2:d}"
+		"en"			"The value has to be between {default}1{green} and {default}{1}{green}. You entered {default}{2}{green}. Try again."
+	}
+	"Required players changed"
+	{
+		// 1: Old value, 2: New value
+		"#format"		"{1:d},{2:d}"
+		"en"			"Changed required players from {default}{1}{green} to {default}{2}{green}."
+	}
+	"Stop conquer time"
+	{
+		"en"			"Stopped setting the flag conquer time."
+	}
+	"Conquer time out of range"
+	{
+		// 1: Entered value
+		"#format"		"{1:d}"
+		"en"			"The value has to be at least {default}1{green}. You entered {default}{1}{green}. Try again."
+	}
+	"Conquer time changed"
+	{
+		// 1: Old value, 2: New value
+		"#format"		"{1:d},{2:d}"
+		"en"			"Changed flag conquer time from {default}{1}{green} to {default}{2}{green}."
+	}
+}

@@ -237,6 +237,9 @@ public OnMapStart()
 	PrecacheModel(SECONDARYAMMO_MODEL, true);
 	PrecacheSound(AMMO_SOUND, true);
 	
+	PrecacheSound("plats/elevbell1.wav", true);
+	PrecacheSound("ambient/alarms/klaxon1.wav", true);
+	
 	g_iLaserMaterial = PrecacheModel("materials/sprites/laser.vmt", true);
 	g_iHaloMaterial = PrecacheModel("materials/sprites/halo01.vmt", true);
 	g_iGlowSprite = PrecacheModel("sprites/blueglow2.vmt", true);
@@ -258,6 +261,12 @@ public OnMapEnd()
 	{
 		KillTimer(g_hDebugZoneTimer);
 		g_hDebugZoneTimer = INVALID_HANDLE;
+	}
+	
+	if(g_hStartSound != INVALID_HANDLE)
+	{
+		KillTimer(g_hStartSound);
+		g_hStartSound = INVALID_HANDLE;
 	}
 }
 
@@ -603,6 +612,12 @@ public Action:Event_OnRoundEnd(Handle:event, const String:name[], bool:dontBroad
 {
 	g_bRoundEnded = true;
 	
+	if(g_hStartSound != INVALID_HANDLE)
+	{
+		KillTimer(g_hStartSound);
+		g_hStartSound = INVALID_HANDLE;
+	}
+	
 	// Don't do anything, if no flags for that map -> "disabled"
 	if(GetArraySize(g_hFlags) == 0)
 		return Plugin_Continue;
@@ -638,7 +653,7 @@ public Action:Hook_OnWeaponDrop(client, weapon)
 		return Plugin_Continue;
 	
 	// Primary or secondary weapon? Don't drop.
-	if(Client_GetWeaponBySlot(client, CS_SLOT_PRIMARY) == weapon || Client_GetWeaponBySlot(client, CS_SLOT_SECONDARY) == weapon)
+	if(IsClientInGame(client) && (Client_GetWeaponBySlot(client, CS_SLOT_PRIMARY) == weapon || Client_GetWeaponBySlot(client, CS_SLOT_SECONDARY) == weapon))
 	{
 		// Player buys a new weapon through the buymenu. delete the old.
 		if(g_bPlayerIsBuying[client])

@@ -284,14 +284,29 @@ GivePlayerClassWeapons(client, iClass, iWeaponSet)
 			g_iPlayerGrenade[client][GRENADE_FLASH] = GetArrayCell(hWeaponList, i+1);
 			if(g_iPlayerGrenade[client][GRENADE_FLASH] > 0)
 				Client_GiveWeapon(client, sWeapon, false);
-			if(g_iPlayerGrenade[client][GRENADE_FLASH] > 1)
-				Client_GiveWeapon(client, sWeapon, false);
 		}
 		else if(StrEqual(sWeapon, "weapon_smokegrenade", false))
 		{
 			g_iPlayerGrenade[client][GRENADE_SMOKE] = GetArrayCell(hWeaponList, i+1);
 			if(g_iPlayerGrenade[client][GRENADE_SMOKE] > 0)
 				Client_GiveWeapon(client, sWeapon, false);
+		}
+		else if(StrEqual(sWeapon, "item_kevlar", false))
+		{
+			SetEntProp(client, Prop_Send, "m_ArmorValue", GetArrayCell(hWeaponList, i+1));
+		}
+		else if(StrEqual(sWeapon, "item_assaultsuit", false))
+		{
+			SetEntProp(client, Prop_Send, "m_ArmorValue", GetArrayCell(hWeaponList, i+1));
+			SetEntProp(client, Prop_Send, "m_bHasHelmet", 1);
+		}
+		else if(StrEqual(sWeapon, "health", false))
+		{
+			Entity_SetHealth(client, GetArrayCell(hWeaponList, i+1));
+		}
+		else if(StrEqual(sWeapon, "speed", false))
+		{
+			SetEntPropFloat(client, Prop_Send, "m_flLaggedMovementValue", GetArrayCell(hWeaponList, i+1));
 		}
 		else
 		{

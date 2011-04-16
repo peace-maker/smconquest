@@ -95,6 +95,15 @@ public Menu_BuyItem(Handle:menu, MenuAction:action, param1, param2)
 			// That item_nvgs doesn't really exist;)
 			SetEntProp(param1, Prop_Send, "m_bHasNightVision", 1);
 		}
+		else if(StrEqual(sExplode[0], "item_kevlar", false))
+		{
+			SetEntProp(param1, Prop_Send, "m_ArmorValue", 100);
+		}
+		else if(StrEqual(sExplode[0], "item_assaultsuit", false))
+		{
+			SetEntProp(param1, Prop_Send, "m_ArmorValue", 100);
+			SetEntProp(param1, Prop_Send, "m_bHasHelmet", 1);
+		}
 		else
 		{
 			// Handle grenades separately

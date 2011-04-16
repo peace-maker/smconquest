@@ -96,8 +96,10 @@ public EntOut_OnStartTouch(const String:output[], caller, activator, Float:delay
 		return;
 	}
 	
+	new iTeam = GetClientTeam(activator);
+	
 	// Don't care, if his team already owns that flag.
-	if(GetClientTeam(activator) == iCurrentTeam)
+	if(iTeam == iCurrentTeam)
 		return;
 	
 	new iRequiredPlayers = GetArrayCell(hFlag, FLAG_REQPLAYERS);
@@ -105,7 +107,7 @@ public EntOut_OnStartTouch(const String:output[], caller, activator, Float:delay
 	
 	new iTime = GetArrayCell(hFlag, FLAG_TIME);
 	
-	new iTeamCount = GetTeamClientCount(GetClientTeam(activator));
+	new iTeamCount = GetTeamClientCount(iTeam);
 	
 	// Enable a team with less players as required to capture that flags
 	if(GetConVarBool(g_hCVHandicap) && iTeamCount < iRequiredPlayers)
@@ -149,6 +151,17 @@ public EntOut_OnStartTouch(const String:output[], caller, activator, Float:delay
 		new Handle:hConquerTimer = CreateTimer(float(iTime), Timer_OnConquerFlag, iIndex, TIMER_FLAG_NO_MAPCHANGE);
 		SetArrayCell(hFlag, FLAG_CONQUERTIMER, hConquerTimer);
 		SetArrayCell(hFlag, FLAG_CONQUERSTARTTIME, GetTime());
+		
+		// Play a sound
+		if(iTeam == CS_TEAM_T)
+		{
+			// Lower sound for T
+			EmitSoundToAll("ambient/alarms/klaxon1.wav");
+		}
+		else if(iTeam == CS_TEAM_CT)
+		{
+			EmitSoundToAll("plats/elevbell1.wav");
+		}
 		
 		// Show it now to all players, if requires more than 1
 		if(iRequiredPlayers > 1)
@@ -271,6 +284,18 @@ public Action:Timer_OnConquerFlag(Handle:timer, any:iIndex)
 	// Get team of first client
 	new iTeam = GetClientTeam(GetArrayCell(hPlayers, 0));
 	
+	new iRequiredPlayers = GetArrayCell(hFlag, FLAG_REQPLAYERS);
+	
+	new iTeamCount = GetTeamClientCount(iTeam);
+	
+	// Enable a team with less players as required to capture that flags
+	if(GetConVarBool(g_hCVHandicap) && iTeamCount < iRequiredPlayers)
+		iRequiredPlayers = iTeamCount;
+	
+	// Someone just got removed?
+	if(iRequiredPlayers > iNumPlayers)
+		return Plugin_Stop;
+	
 	// Set the color of the flag and play the sound
 	decl String:sBuffer[64];
 	if(iTeam == CS_TEAM_T)
@@ -303,14 +328,6 @@ public Action:Timer_OnConquerFlag(Handle:timer, any:iIndex)
 	
 	// Get the flag name
 	GetArrayString(hFlag, FLAG_NAME, sBuffer, sizeof(sBuffer));
-	
-	new iRequiredPlayers = GetArrayCell(hFlag, FLAG_REQPLAYERS);
-	
-	new iTeamCount = GetTeamClientCount(iTeam);
-	
-	// Enable a team with less players as required to capture that flags
-	if(GetConVarBool(g_hCVHandicap) && iTeamCount < iRequiredPlayers)
-		iRequiredPlayers = iTeamCount;
 	
 	new iClient;
 	new iScore = GetConVarInt(g_hCVCaptureScore);
@@ -730,9 +747,9 @@ RemoveLeftFlags()
 		if(IsValidEntity(i)
 		&& IsValidEdict(i)
 		&& GetEdictClassname(i, sBuffer, sizeof(sBuffer))
-		&& (StrEqual(sBuffer, "prop_dynamic", false) || StrEqual(sBuffer, "trigger_multiple", false) || StrEqual(sBuffer, "ambient_generic", false))
+		&& (StrEqual(sBuffer, "prop_dynamic", false) || StrEqual(sBuffer, "trigger_multiple", false) || StrEqual(sBuffer, "prop_physics", false))
 		&& GetEntPropString(i, Prop_Data, "m_iName", sBuffer, sizeof(sBuffer))
-		&& (StrContains(sBuffer, "scq_flag") != -1 || StrContains(sBuffer, "scq_zone") != -1 || StrContains(sBuffer, "scq_sound") != -1 || StrContains(sBuffer, "scq_ammo") != -1))
+		&& (StrContains(sBuffer, "scq_flag") != -1 || StrContains(sBuffer, "scq_zone") != -1 || StrContains(sBuffer, "scq_ammo") != -1))
 			AcceptEntityInput(i, "Kill");
 	}
 	

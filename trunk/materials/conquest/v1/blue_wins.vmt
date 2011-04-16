@@ -1,0 +1,6 @@
+"UnlitGeneric"
+{
+	"$baseTexture" "conquest/v1/blue_wins"
+	"$translucent" "1"
+	"$ignorez" "1" 
+}

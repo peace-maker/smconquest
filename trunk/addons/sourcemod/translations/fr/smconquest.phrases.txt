@@ -1,0 +1,339 @@
+"Phrases"
+{
+	"Respawn in x seconds"
+	{
+		// 1: Seconds remaining until respawn
+		"fr"			"Respawn dans {1} seconde(s)."
+	}
+	"Contested"
+	{
+		"fr"			"Contesté"
+	}
+	"Need more players"
+	{
+		// 1: Number of players left needed to capture the flag
+		"fr"			"Besoin de {1} joueur(s) de plus."
+	}
+	"Captured a flag"
+	{
+		// 1: Player name, 2: flag description
+		"fr"			"{teamcolor}{1}{green} a capturé le drapeau @ {olive}{2}{green}."
+	}
+	// This is a connector phrase.
+	// It's used to concatenate player names on multiple flag captures
+	// Name1, Name2 {and} Name3
+	"and"
+	{
+		"fr"			"et"
+	}
+	"Multiple captured a flag"
+	{
+		// 1: List of player name, 2: flag description
+		"fr"			"{1}{green} a capturé le drapeau @ {olive}{2}{green}."
+	}
+	
+	"Class limit reached"
+	{
+		// 1: Class name
+		"fr"			"La limite pour la classe {default}{1}{green} est déjà atteinte. Choisis en une autre."
+	}
+	"Not enough money for weaponset"
+	{
+		"fr"			"Vous n'avez pas assez d'argent pour acheter cette arme."
+	}
+	"Chose class" 
+	{
+		// 1: Class name, 2: Weaponset name
+		"fr"			"Tu sera {default}{1}{green} avec {default}{2}{green} à ton prochain respawn."
+	}
+	"Select class"   
+	{
+		"fr"			"Selectionnez une classe:"
+	}
+	"Select weapon set"  
+	{
+		// 1: Class name // A REVOIR
+		"fr"			"Selectionnez un ensemble d'arme {1}"
+	}
+	"Class introduction"
+	{
+		"fr"			"Ce serveur exécute {olive}SM:Conquest{green}. Choisissez votre classe et capturez tout les drapeaux!"
+	}
+	"Apply class"
+	{
+		// 1: Class name, 2: Weaponset name
+		"fr"			"Tu es maintenant {default}{1}{green} avec {default}{2}{green}."
+	}
+	"HE left"
+	{
+		// 1: Count of HE grenades left  
+		"fr"			"Tu as {lightgreen}{1}{green} grenade(s)."
+	}
+	"Flashbangs left"   
+	{
+		// 1: Count of flashbangs left // A REVOIR
+		"fr"			"Tu as {lightgreen}{1}{green} flashbang(s)."
+	}
+	"Smokes left"
+	{
+		// 1: Count of smoke grenades left // A REVOIR
+		"fr"			"Tu as {lightgreen}{1}{green} fumigène(s)."
+	}
+	
+	"Has to be alive"
+	{
+		"fr"			"Vous devez être en vie pour utiliser cette commande."
+	}
+	"Not enough money"
+	{
+		// 1: Buymenu item
+		"fr"			"Vous n'avez pas assez d'argent pour acheter {default}{1}{green}."
+	}
+	"HE bought"
+	{
+		// 1: Price, 2: amount of grenades in stack 
+		"fr"			"Vous avez acheté une{default}Grenade (${1}){green} vous en avez maintenant {lightgreen}{2}{green}."
+	}
+	"Flashbang bought" 
+	{
+		// 1: Price, 2: amount of grenades in stack 
+		"fr"			"Vous avez acheté une{default}Flashbang(${1}){green} vous en avez maintenant {lightgreen}{2}{green}."
+	}
+	"Smoke bought"
+	{ 
+		// 1: Price, 2: amount of grenades in stack  
+		"fr"			"Vous avez acheté une{default}Fumigène (${1}){green} vous en avez maintenant {lightgreen}{2}{green}."
+	}
+	"Item bought"
+	{
+		// 1: item name
+		"fr"			"Tu as acheté {default}{1}{green}."
+	}
+	"Select category"
+	{
+		"fr"			"Menu d'achat: Sélectionnez une catégorie"
+	}
+	
+	"Administration"
+	{
+		"fr"			"Administration"
+	}
+	"List flags"
+	{
+		"fr"			"Liste des drapeaux sur la map"
+	}
+	"Add flag"
+	{
+		"fr"			"Ajoute un nouveau drapeau"
+	}
+	"Debug mode"
+	{
+		"fr"			"Mode débug"
+	}
+	"Flags"
+	{
+		"fr"			"Drapeaux"
+	}
+	"Edit Flag"
+	{
+		// 1: Flag description
+		"fr"			"Modifier {1}"
+	}
+	"Change position"
+	{
+		"fr"			"Changer la position"
+	}
+	"Rotate"
+	{
+		"fr"			"Pivoter"
+	}
+	"Teleport to flag"  
+	{
+		"fr"			"Téléportation au drapeau"
+	}
+	"Change Zone Position 1"
+	{
+		"fr"			"Change Position Zone 1"
+	}
+	"Change Zone Position 2"
+	{
+		"fr"			"Change Position Zone 2"
+	}
+	"Rename"
+	{
+		"fr"			"Renommer"
+	}
+	"Both"
+	{
+		"fr"			"Les deux"
+		
+	}
+	"Default Team"
+	{
+		"fr"			"Team par défaut"
+	}
+	"Required Players"
+	{
+		"fr"			"Joueurs requis"
+	}
+	"Conquer Time"
+	{
+		"fr"			"Temps de capture"
+	}
+	"Change sorting"
+	{
+		"fr"			"Trier"
+	}
+	"Delete"
+	{
+		"fr"			"Supprimer"
+	}
+	"Rotate flag"
+	{
+		// 1: Flag description
+		"fr"			"Pivoter le drapeau \"{1}\" ...?
+	}
+	"To the left"
+	{
+		// 1: Stepsize to add/subtract from the rotation angle
+		"fr"			"Vers la gauche (+{1})"
+	}
+	"To the right"
+	{
+		// 1: Stepsize to add/subtract from the rotation angle
+		"fr"			"Vers la droite (+{1})"
+	}
+	"Set new position"
+	{
+		"fr"			"Règler la position du nouveau drapeau ..?"
+	}
+	"Edit position"
+	{
+		// 1: Flag description
+		"fr"			"Changer la position du drapeau \"{1}\" vers ..?"
+	}
+	"Where I stand" 
+	{
+	    "fr"			"L'endroit où je me tiens. Modifie la rotation du drapeau."
+	}
+	"Where I aim at"  // a revoir
+	{
+		"fr"			"Où je vise."
+	}
+	"Save"
+	{
+		"fr"			"Sauvegarder"
+	}
+	"Insert before"
+	{
+		// 1: Flag description
+		"fr"			"Insérer \"{1}\" avant ..?"
+	}
+	"Latest"
+	{
+		"fr"			"Le plus récent"
+	}
+	"Change zone"
+	{
+		// 1: Flag description
+		"fr"			"Changer la zone de déclenchement de \"{1}\""
+	}
+	"Add to"
+	{
+		// 1: Axis descriptor ("X", "Y" or "Z")
+		"fr"			"Ajouter à {1}"
+	}
+	"Subtract from"
+	{
+		// 1: Axis descriptor ("X", "Y" or "Z")
+		"fr"			"Soustraire de {1}"
+	}
+	"Type new name"
+	{
+		// 1: Flag description
+		"fr"			"Ecrire un nouveau nom de drapeau pour {olive}{1}{green} dans le chat. Ecrire {default}!stop{green} pour annuler."
+	}
+	"Type players required"
+	{
+		// 1: Flag description, 2: current setting
+		"fr"			"Ecrire le nombre de joueurs requis pour la capture du drapeau {olive}{1}{green} ({default}{2}{green}) dans le chat. Ecrire {default}!stop{green} pour annuler."
+
+	}
+	"Type conquer time"
+	{
+		// 1: Flag description, 2: current setting
+		"fr"			"Ecrire le temps nécessaire pour capturer le drapeau {olive}{1}{green} ({default}{2}{green}) dans le chat. Ecrire {default}!stop{green} pour annuler."
+	}
+	"Delete confirm"
+	{
+		// 1: Flag description
+		"fr"			"Voulez-vous vraiment supprimer le drapeau \"{1}\"?"
+	}
+	"Deletion aborted"
+	{
+		"fr"			"Suppression annulée."
+	}
+	"Delete confirmation"
+	{
+		// 1: Flag description
+		"fr"			"Suppression du drapeau {olive}{1}{green} avec succès."
+	}
+	"First set position"
+	{
+		"fr"			"Vous devez d'abord définir une position."
+	}
+	"Type description"
+	{
+		"en"			"Merci d'écrire une description pour le drapeau. Ecrire {default}!stop{green} pour annuler."
+	}
+	"Aim at solid"
+	{
+		"fr"			"Vous devez viser un objet solide."
+	}
+	"Stop naming"
+	{
+		"fr"			"Le drapeau a été supprimé."
+	}
+	"Add confirmation"
+	{
+		// 1: Flag description
+		"fr"			"Ajout d'un nouveau drapeau {default}{1}{green}."
+	}
+	"Stopped renaming"
+	{
+		"fr"			"Changement de nom du drapeau annulé."
+	}
+	"Name changed"
+	{
+		// 1: Old flag description, 2: New flag description
+		"fr"			"Vous avez renommé {olive}{1}{green} en {olive}{2}{green}."
+	}
+	"Stop required players"
+	{
+		"fr"			"Changement paramètres des joueurs requis annulés."
+	}
+	"Required players out of range"
+	{
+		// 1: Upper limit (MAXPLAYERS), 2: Entered value
+		"fr"			"La valeur doit être comprise entre {default}1{green} et {default}{1}{green}. Vous avez entré {default}{2}{green}. Essayez à nouveau."
+	}
+	"Required players changed"
+	{
+		// 1: Old value, 2: New value
+		"fr"			"Changement des joueurs requis de {default}{1}{green} à {default}{2}{green}."
+	}
+	"Stop conquer time"
+	{
+		"fr"			"Changement paramètres du temps de capture annulés."
+	}
+	"Conquer time out of range"
+	{
+		// 1: Entered value
+		"fr"			"La valeur doit être d'au moins {default}1{green}. Vous avez entré {default}{1}{green}. Essayez à nouveau."
+	}
+	"Conquer time changed"
+	{
+		// 1: Old value, 2: New value
+		"fr"			"Changement du temps de capture de {default}{1}{green} à {default}{2}{green}."
+	}
+}

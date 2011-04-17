@@ -46,7 +46,7 @@ new g_iPlayerWeaponSet[MAXPLAYERS+2] = {-1, ...};
 new g_iPlayerGrenade[MAXPLAYERS+2][3];
 
 new Handle:g_hApplyPlayerClass[MAXPLAYERS+2] = {INVALID_HANDLE,...};
-
+new bool:g_bPlayerJustJoined[MAXPLAYERS+2] = {true,...};
 
 /**
  * Menu Handler
@@ -157,6 +157,17 @@ public Menu_SelectWeaponSet(Handle:menu, MenuAction:action, param1, param2)
 		CPrintToChat(param1, "%s%t", PREFIX, "Chose class", sClassName, sWeapon);
 		
 		g_iPlayerClass[param1] = g_iPlayerTempClass[param1];
+		
+		// Apply the first class chosing directly without the need of respawn
+		if(g_bPlayerJustJoined[param1] && IsPlayerAlive(param1) && GetClientTeam(param1) >= CS_TEAM_T)
+		{
+			// Strip weapons
+			Client_RemoveAllWeapons(param1, "weapon_knife", true);
+			// Set the class with a delay
+			g_hApplyPlayerClass[param1] = CreateTimer(0.1, Timer_ApplyPlayerClass, GetClientUserId(param1), TIMER_FLAG_NO_MAPCHANGE);
+		}
+		
+		g_bPlayerJustJoined[param1] = false;
 	}
 }
 
@@ -298,7 +309,7 @@ GivePlayerClassWeapons(client, iClass, iWeaponSet)
 		else if(StrEqual(sWeapon, "item_assaultsuit", false))
 		{
 			SetEntProp(client, Prop_Send, "m_ArmorValue", GetArrayCell(hWeaponList, i+1));
-			SetEntProp(client, Prop_Send, "m_bHasHelmet", 1);
+			SetEntProp(client, Prop_Send, "m_bHasHelment", 1);
 		}
 		else if(StrEqual(sWeapon, "health", false))
 		{
@@ -355,13 +366,13 @@ public Action:Command_ShowClassMenu(client, args)
 public Action:Timer_ApplyPlayerClass(Handle:timer, any:userid)
 {
 	new client = GetClientOfUserId(userid);
-	if(!client || !IsClientInGame(client) || !IsPlayerAlive(client))
-	{
-		g_hApplyPlayerClass[client] = INVALID_HANDLE;
-		return Plugin_Stop;
-	}
 	
 	g_hApplyPlayerClass[client] = INVALID_HANDLE;
+	
+	if(!client || !IsClientInGame(client) || !IsPlayerAlive(client))
+	{
+		return Plugin_Stop;
+	}
 	
 	// Set the default class, if unset
 	if(g_iPlayerClass[client] == -1)

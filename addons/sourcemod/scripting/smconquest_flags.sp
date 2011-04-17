@@ -156,11 +156,11 @@ public EntOut_OnStartTouch(const String:output[], caller, activator, Float:delay
 		if(iTeam == CS_TEAM_T)
 		{
 			// Lower sound for T
-			EmitSoundToAll("ambient/alarms/klaxon1.wav");
+			EmitSoundToAll("ambient/alarms/klaxon1.wav", SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_LIBRARY);
 		}
 		else if(iTeam == CS_TEAM_CT)
 		{
-			EmitSoundToAll("plats/elevbell1.wav");
+			EmitSoundToAll("plats/elevbell1.wav", SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_LIBRARY);
 		}
 		
 		// Show it now to all players, if requires more than 1
@@ -329,6 +329,9 @@ public Action:Timer_OnConquerFlag(Handle:timer, any:iIndex)
 	// Get the flag name
 	GetArrayString(hFlag, FLAG_NAME, sBuffer, sizeof(sBuffer));
 	
+	// How much money do player earn?
+	new iReward = GetConVarInt(g_hCVCaptureMoney);
+	
 	new iClient;
 	new iScore = GetConVarInt(g_hCVCaptureScore);
 	decl String:sClientName[MAX_NAME_LENGTH];
@@ -342,6 +345,10 @@ public Action:Timer_OnConquerFlag(Handle:timer, any:iIndex)
 		// Increase frags
 		if(iScore > 0)
 			Client_SetScore(iClient, Client_GetScore(iClient)+iScore);
+		
+		// Give player some money
+		if(iReward > 0)
+			SetEntData(iClient, g_iAccount, GetEntData(iClient, g_iAccount)+iReward);
 		
 		LogPlayerEvent(iClient, "triggered", "scq_flag_captured");
 	}
@@ -362,6 +369,10 @@ public Action:Timer_OnConquerFlag(Handle:timer, any:iIndex)
 			// Increase frags
 			if(iScore > 0)
 				Client_SetScore(iClient, Client_GetScore(iClient)+iScore);
+			
+			// Give player some money
+			if(iReward > 0)
+				SetEntData(iClient, g_iAccount, GetEntData(iClient, g_iAccount)+iReward);
 			
 			LogPlayerEvent(iClient, "triggered", "scq_flag_captured");
 		}

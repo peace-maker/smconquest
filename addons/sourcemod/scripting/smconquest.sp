@@ -56,6 +56,7 @@ new Handle:g_hCVHandicap;
 new Handle:g_hCVCaptureScore;
 new Handle:g_hCVTeamScore;
 new Handle:g_hCVRemoveObjectives;
+new Handle:g_hCVCaptureMoney;
 
 // Tag
 new Handle:g_hSVTags; 
@@ -104,6 +105,7 @@ public OnPluginStart()
 	g_hCVCaptureScore = CreateConVar("sm_conquest_capturescore", "1", "How many frags should a player receive when conquering a flag?", FCVAR_PLUGIN, true, 0.0);
 	g_hCVTeamScore = CreateConVar("sm_conquest_teamscore", "1", "How many points should a team earn when conquering all flags?", FCVAR_PLUGIN, true, 0.0);
 	g_hCVRemoveObjectives = CreateConVar("sm_conquest_removeobjectives", "1", "Remove all bomb/hostage related stuff to prevent round end?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_hCVCaptureMoney = CreateConVar("sm_conquest_capturemoney", "500", "How much money should all players earn for capturing a flag?", FCVAR_PLUGIN, true, 0.0);
 	
 	g_hSVTags = FindConVar("sv_tags");
 	
@@ -331,6 +333,7 @@ public OnClientDisconnect(client)
 	g_iPlayerClass[client] = -1;
 	g_iPlayerWeaponSet[client] = -1;
 	g_iPlayerTempClass[client] = -1;
+	g_bPlayerJustJoined[client] = true;
 	
 	g_iPlayerActiveSlot[client] = -1;
 	
@@ -417,11 +420,11 @@ public Action:Event_OnPlayerSpawn(Handle:event, const String:name[], bool:dontBr
 	{
 		// Strip weapons
 		if(GetClientTeam(client) >= CS_TEAM_T)
+		{
 			Client_RemoveAllWeapons(client, "weapon_knife", true);
-		
-		// Set the class with a delay
-		if(GetClientTeam(client) >= CS_TEAM_T)
+			// Set the class with a delay
 			g_hApplyPlayerClass[client] = CreateTimer(0.5,Timer_ApplyPlayerClass, userid, TIMER_FLAG_NO_MAPCHANGE);
+		}
 	}
 	
 	g_bPlayerInBuyZone[client] = false;
@@ -678,8 +681,8 @@ public Action:Hook_OnWeaponDrop(client, weapon)
 		}
 		return Plugin_Handled;
 	}
-	// Drop grenades
-	return Plugin_Continue;
+	// Don't drop grenades
+	return Plugin_Handled;
 }
 
 // Keep track of which weapon the player is holding for dropping the correct ammo on death.

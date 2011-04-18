@@ -57,6 +57,7 @@ new Handle:g_hCVCaptureScore;
 new Handle:g_hCVTeamScore;
 new Handle:g_hCVRemoveObjectives;
 new Handle:g_hCVCaptureMoney;
+new Handle:g_hCVRemoveDroppedWeapons;
 
 // Tag
 new Handle:g_hSVTags; 
@@ -65,6 +66,7 @@ new Handle:g_hRespawnPlayer[MAXPLAYERS+2] = {INVALID_HANDLE,...};
 new Handle:g_hRemoveSpawnProtection[MAXPLAYERS+2] = {INVALID_HANDLE,...};
 
 new g_iPlayerActiveSlot[MAXPLAYERS+2] = {-1,...};
+new Handle:g_hRemoveWeapons = INVALID_HANDLE;
 
 // CCSPlayer::m_iAccount offset
 new g_iAccount = -1;
@@ -106,6 +108,7 @@ public OnPluginStart()
 	g_hCVTeamScore = CreateConVar("sm_conquest_teamscore", "1", "How many points should a team earn when conquering all flags?", FCVAR_PLUGIN, true, 0.0);
 	g_hCVRemoveObjectives = CreateConVar("sm_conquest_removeobjectives", "1", "Remove all bomb/hostage related stuff to prevent round end?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_hCVCaptureMoney = CreateConVar("sm_conquest_capturemoney", "500", "How much money should all players earn for capturing a flag?", FCVAR_PLUGIN, true, 0.0);
+	g_hCVRemoveDroppedWeapons = CreateConVar("sm_conquest_removedroppedweapons", "1", "Should we remove dropped weapons in a certain interval?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	
 	g_hSVTags = FindConVar("sv_tags");
 	
@@ -269,6 +272,12 @@ public OnMapEnd()
 	{
 		KillTimer(g_hStartSound);
 		g_hStartSound = INVALID_HANDLE;
+	}
+	
+	if(g_hRemoveWeapons != INVALID_HANDLE)
+	{
+		KillTimer(g_hRemoveWeapons);
+		g_hRemoveWeapons = INVALID_HANDLE;
 	}
 }
 
@@ -604,9 +613,20 @@ public Action:Event_OnRoundStart(Handle:event, const String:name[], bool:dontBro
 		g_hStartSound = INVALID_HANDLE;
 	}
 	
-	g_hStartSound = CreateTimer(3.0, Timer_OnStartSound, _, TIMER_FLAG_NO_MAPCHANGE);
+	g_hStartSound = CreateTimer(3.0, Timer_OnStartSound, _, TIMER_FLAG_NO_MAPCHANGE|TIMER_REPEAT);
 	
 	EmitSoundToAll("conquest/v1/gameon.mp3");
+	
+	if(g_hRemoveWeapons != INVALID_HANDLE)
+	{
+		KillTimer(g_hRemoveWeapons);
+		g_hRemoveWeapons = INVALID_HANDLE;
+	}
+	
+	if(GetConVarBool(g_hCVRemoveDroppedWeapons))
+	{
+		g_hRemoveWeapons = CreateTimer(20.0, Timer_OnRemoveWeapons, _, TIMER_FLAG_NO_MAPCHANGE);
+	}
 	
 	return Plugin_Continue;
 }
@@ -619,6 +639,12 @@ public Action:Event_OnRoundEnd(Handle:event, const String:name[], bool:dontBroad
 	{
 		KillTimer(g_hStartSound);
 		g_hStartSound = INVALID_HANDLE;
+	}
+	
+	if(g_hRemoveWeapons != INVALID_HANDLE)
+	{
+		KillTimer(g_hRemoveWeapons);
+		g_hRemoveWeapons = INVALID_HANDLE;
 	}
 	
 	// Don't do anything, if no flags for that map -> "disabled"
@@ -758,23 +784,70 @@ public Hook_OnStartTouchAmmo(entity, other)
 public Hook_OnPostThinkPost(entity)
 {
 	// Don't do anything, if no flags for that map -> "disabled"
-	if(!GetConVarBool(g_hCVUseBuymenu) || GetArraySize(g_hFlags) == 0)
+	if(GetArraySize(g_hFlags) == 0)
 		return;
 	
-	new bool:bInBuyZone = GetEntProp(entity, Prop_Send, "m_bInBuyZone") == 1;
-	if(bInBuyZone)
+	if(!GetConVarBool(g_hCVUseBuymenu))
 	{
-		SetEntProp(entity, Prop_Send, "m_bInBuyZone", 0);
+		// Simulate not being in buyzone, but keep the information for our own buymenu
+		new bool:bInBuyZone = GetEntProp(entity, Prop_Send, "m_bInBuyZone") == 1;
+		if(bInBuyZone)
+		{
+			SetEntProp(entity, Prop_Send, "m_bInBuyZone", 0);
+		}
+		
+		if(!g_bPlayerInBuyZone[entity] && bInBuyZone)
+		{
+			g_bPlayerInBuyZone[entity] = true;
+			
+		}
+		else if(g_bPlayerInBuyZone[entity] && !bInBuyZone)
+		{
+			g_bPlayerInBuyZone[entity] = false;
+		}
 	}
 	
-	if(!g_bPlayerInBuyZone[entity] && bInBuyZone)
+	// show the progressbar for spectating clients either
+	if(!IsPlayerAlive(entity) || IsClientObserver(entity))
 	{
-		g_bPlayerInBuyZone[entity] = true;
+		// Only show the bar, when spectating a player directly
+		new Obs_Mode:iObsMode = Client_GetObserverMode(entity);
+		if(iObsMode == OBS_MODE_IN_EYE || iObsMode == OBS_MODE_CHASE)
+		{
+			new iObsTarget = Client_GetObserverTarget(entity);
+			if(iObsTarget != -1)
+			{
+				// Is this player currently conquering a flag?
+				new iSize = GetArraySize(g_hPlayersInZone), iNumPlayers, Handle:hPlayers, Handle:hFlag;
+				new iConquerStartTime, iTime, iClient;
+				for(new i=0;i<iSize;i++)
+				{
+					// Is this flag currently being conquered by someone?
+					hFlag = GetArrayCell(g_hFlags, i);
+					iConquerStartTime = GetArrayCell(hFlag, FLAG_CONQUERSTARTTIME);
+					if(iConquerStartTime != -1)
+					{
+						hPlayers = GetArrayCell(g_hPlayersInZone, i);
+						iNumPlayers = GetArraySize(hPlayers);
+						for(new x=0;x<iNumPlayers;x++)
+						{
+							iClient = GetArrayCell(hPlayers, x);
+							// We're spectaing a conqueror, show the bar either
+							if(iClient == iObsTarget)
+							{
+								iTime = GetArrayCell(hFlag, FLAG_TIME);
+								SetEntPropFloat(entity, Prop_Send, "m_flProgressBarStartTime", GetGameTime());
+								SetEntProp(entity, Prop_Send, "m_iProgressBarDuration", iTime - GetTime() + iConquerStartTime);
+								return;
+							}
+						}
+					}
+				}
+			}
+		}
 		
-	}
-	else if(g_bPlayerInBuyZone[entity] && !bInBuyZone)
-	{
-		g_bPlayerInBuyZone[entity] = false;
+		SetEntPropFloat(entity, Prop_Send, "m_flProgressBarStartTime", 0.0);
+		SetEntProp(entity, Prop_Send, "m_iProgressBarDuration", 0);
 	}
 }
 
@@ -860,6 +933,28 @@ public Action:Timer_ReaddAmmo(Handle:timer, any:data)
 	Client_SetWeaponPlayerAmmoEx(client, iWeapon, iPrimaryAmmo);
 	
 	return Plugin_Stop;
+}
+
+public Action:Timer_OnRemoveWeapons(Handle:timer, any:data)
+{
+	if(!GetConVarBool(g_hCVRemoveDroppedWeapons))
+	{
+		g_hRemoveWeapons = INVALID_HANDLE;
+		return Plugin_Stop;
+	}
+	
+	new iMaxEntities = GetMaxEntities();
+	decl String:sClassName[64];
+	for(new i=MaxClients+1;i<iMaxEntities;i++)
+	{
+		if(IsValidEntity(i)
+		&& IsValidEdict(i)
+		&& GetEdictClassname(i, sClassName, sizeof(sClassName))
+		&& StrContains(sClassName, "weapon_") != -1
+		&& GetEntPropEnt(i, Prop_Send, "m_hOwner") == -1)
+			AcceptEntityInput(i, "Kill");
+	}
+	return Plugin_Continue;
 }
 
 /**

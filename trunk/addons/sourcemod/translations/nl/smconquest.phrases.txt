@@ -1,0 +1,337 @@
+"Phrases"
+{
+	"Respawn in x seconds"
+	{
+		// 1: Seconds remaining until respawn
+		"nl"			"Respawn in {1} second(s)."
+	}
+	"Contested"
+	{
+		"nl"			"Gevangen"
+	}
+	"Need more players"
+	{
+		// 1: Number of players left needed to capture the flag
+		"nl"			"Nog {1} speler(s) nodig."
+	}
+	"Captured a flag"
+	{
+		// 1: Player name, 2: flag description
+		"nl"			"{teamcolor}{1}{green} heeft de vlag gevangen @ {olive}{2}{green}."
+	}
+	// This is a connector phrase.
+	// It's used to concatenate player names on multiple flag captures
+	// Name1, Name2 {and} Name3
+	"and"
+	{
+		"nl"			"en"
+	}
+	"Multiple captured a flag"
+	{
+		// 1: List of player name, 2: flag description
+		"nl"			"{1}{green} heeft de vlag gevangen @ {olive}{2}{green}."
+	}
+	
+	"Class limit reached"
+	{
+		// 1: Class name
+		"nl"			"De limiet voor class:{default}{1}{green} is reeds bereikt. Kies een andere."
+	}
+	"Not enough money for weaponset"
+	{
+		"nl"			"Je hebt niet genoeg geld"
+	}
+	"Chose class"
+	{
+		// 1: Class name, 2: Weaponset name
+		"nl"			"Je gaat een {default}{1}{green} zijn met een {default}{2}{green} wanneer je spawned."
+	}
+	"Select class"
+	{
+		"nl"			"Selecteer een class:"
+	}
+	"Select weapon set"
+	{
+		// 1: Class name
+		"nl"			"Selecteer {1} wapen sets:"
+	}
+	"Class introduction"
+	{
+		"nl"			"Deze server draait {olive}SM:Conquest{green}. Kies je class en bemachtig alle flags!"
+	}
+	"Apply class"
+	{
+		// 1: Class name, 2: Weaponset name
+		"nl"			"Je bent nu een {default}{1}{green} met {default}{2}{green}."
+	}
+	"HE left"
+	{
+		// 1: Count of HE grenades left
+		"nl"			"Je hebt nog {lightgreen}{1}{green} granaten."
+	}
+	"Flashbangs left"
+	{
+		// 1: Count of flashbangs left
+		"nl"			"Je hebt nog {lightgreen}{1}{green} flashbangs."
+	}
+	"Smokes left"
+	{
+		// 1: Count of smoke grenades left
+		"nl"			"Je hebt nog {lightgreen}{1}{green} rook granaten."
+	}
+	
+	"Has to be alive"
+	{
+		"nl"			"Je moet levend zijn om deze functie te gebruiken!"
+	}
+	"Not enough money"
+	{
+		// 1: Buymenu item
+		"nl"			"Je hebt niet genoeg geld voor {default}{1}{green}."
+	}
+	"HE bought"
+	{
+		// 1: Price, 2: amount of grenades in stack
+		"nl"			"Je kocht een {default}HE Grenade (${1}){green} je hebt er nu {lightgreen}{2}{green} now."
+	}
+	"Flashbang bought"
+	{
+		// 1: Price, 2: amount of grenades in stack
+		"nl"			"Je kocht een {default}Flashbang (${1}){green} je hebt er nu {lightgreen}{2}{green} now."
+	}
+	"Smoke bought"
+	{
+		// 1: Price, 2: amount of grenades in stack
+		"nl"			"Je kocht een {default}Smoke Grenade (${1}){green} je hebt er nu {lightgreen}{2}{green} now."
+	}
+	"Item bought"
+	{
+		// 1: item name
+		"nl"			"Je kocht een {default}{1}{green}."
+	}
+	"Select category"
+	{
+		"nl"			"Buy menu: Selecteer een categorie"
+	}
+	
+	"Administration"
+	{
+		"nl"			"Admin"
+	}
+	"List flags"
+	{
+		"nl"			"Laat de vlaggen op de map zien"
+	}
+	"Add flag"
+	{
+		"nl"			"Voeg een nieuwe vlag toe"
+	}
+	"Debug mode"
+	{
+		"nl"			"Debug Mode"
+	}
+	"Flags"
+	{
+		"nl"			"Vlaggen"
+	}
+	"Edit Flag"
+	{
+		// 1: Flag description
+		"nl"			"Edit {1}"
+	}
+	"Change position"
+	{
+		"nl"			"Verander positie"
+	}
+	"Rotate"
+	{
+		"nl"			"Draai"
+	}
+	"Teleport to flag"
+	{
+		"nl"			"Ga naar vlag"
+	}
+	"Change Zone Position 1"
+	{
+		"nl"			"Verander Zone Position 1"
+	}
+	"Change Zone Position 2"
+	{
+		"nl"			"Verander Zone Position 2"
+	}
+	"Rename"
+	{
+		"nl"			"Hernoem"
+	}
+	"Both"
+	{
+		"nl"			"Bijde"
+	}
+	"Default Team"
+	{
+		"nl"			"Default Team"
+	}
+	"Required Players"
+	{
+		"nl"			"Aantal spelers nodig"
+	}
+	"Conquer Time"
+	{
+		"nl"			"Vang tijd"
+	}
+	"Change sorting"
+	{
+		"nl"			"Veranderd volgorde"
+	}
+	"Delete"
+	{
+		"nl"			"Verwijder"
+	}
+	"Rotate flag"
+	{
+		// 1: Flag description
+		"nl"			"Draai vlag \"{1}\" ...?
+	}
+	"To the left"
+	{
+		// 1: Stepsize to add/subtract from the rotation angle
+		"nl"			"Naa links (+{1})"
+	}
+	"To the right"
+	{
+		// 1: Stepsize to add/subtract from the rotation angle
+		"nl"			"Naar rechts (+{1})"
+	}
+	"Set new position"
+	{
+		"nl"			"Zet de positie van de nieuwe vlag ..?"
+	}
+	"Edit position"
+	{
+		// 1: Flag description
+		"nl"			"Wijzig positie van de vlag \"{1}\" to ..?"
+	}
+	"Where I stand"
+	{
+		"nl"			"Waar ik nu sta. Wijzig de rotatie."
+	}
+	"Where I aim at"
+	{
+		"nl"			"Waar ik mik."
+	}
+	"Save"
+	{
+		"nl"			"Save"
+	}
+	"Insert before"
+	{
+		// 1: Flag description
+		"nl"			"Voeg \"{1}\" in voor..?"
+	}
+	"Latest"
+	{
+		"nl"			"Laatste"
+	}
+	"Change zone"
+	{
+		// 1: Flag description
+		"nl"			"Verander de trigger zone van \"{1}\""
+	}
+	"Add to"
+	{
+		// 1: Axis descriptor ("X", "Y" or "Z")
+		"nl"			"Voeg {1} toe"
+	}
+	"Subtract from"
+	{
+		// 1: Axis descriptor ("X", "Y" or "Z")
+		"nl"			"Trek {1} af"
+	}
+	"Type new name"
+	{
+		// 1: Flag description
+		"nl"			"Type een nieuwe naam voor vlag: {olive}{1}{green} in chat. Type {default}!stop{green} om te stoppen."
+	}
+	"Type players required"
+	{
+		// 1: Flag description, 2: current setting
+		"nl"			"Typ het aantal spelers nodig om de vlag te vangen {olive}{1}{green} ({default}{2}{green}) in chat. Type {default}!stop{green} om te stoppen."
+	}
+	"Type conquer time"
+	{
+		// 1: Flag description, 2: current setting
+		"nl"			"Type de tijd die nodig is om de vlag te vangen {olive}{1}{green} ({default}{2}{green}) in chat. Type {default}!stop{green} om te stoppen."
+	}
+	"Delete confirm"
+	{
+		// 1: Flag description
+		"nl"			"Ben je zeker dat je vlag \"{1}\" wilt verwijderen?"
+	}
+	"Deletion aborted"
+	{
+		"nl"			"Verwijderen geannuleerd"
+	}
+	"Delete confirmation"
+	{
+		// 1: Flag description
+		"nl"			"Vlag {olive}{1}{green} succesvol verwijderd."
+	}
+	"First set position"
+	{
+		"nl"			"Je moet eerst een nieuwe positie toewijzen."
+	}
+	"Type description"
+	{
+		"nl"			"Type een beschrijving voor de vlag. Type {default}!stop{green} om te stoppen."
+	}
+	"Aim at solid"
+	{
+		"nl"			"Je moet een vol object selecteren"
+	}
+	"Stop naming"
+	{
+		"nl"			"Naam geven geannuleerd. De vlag is verwijderd."
+	}
+	"Add confirmation"
+	{
+		// 1: Flag description
+		"nl"			"Nieuwe vlag toegevoegd: {default}{1}{green}."
+	}
+	"Stopped renaming"
+	{
+		"nl"			"Naam van vlag geven geannuleerd."
+	}
+	"Name changed"
+	{
+		// 1: Old flag description, 2: New flag description
+		"nl"			"{olive}{1}{green} gewijzigd naar: {olive}{2}{green}."
+	}
+	"Stop required players"
+	{
+		"nl"			"Aantal spelers nodig instellen geannuleerd"
+	}
+	"Required players out of range"
+	{
+		// 1: Upper limit (MAXPLAYERS), 2: Entered value
+		"nl"			"De waarde moet tussen {default}1{green} en {default}{1}{green} liggen. Je gaf {default}{2}{green} in. Probeer opnieuw."
+	}
+	"Required players changed"
+	{
+		// 1: Old value, 2: New value
+		"nl"			"Aantal spelers nodig gewijzigt van {default}{1}{green} naar {default}{2}{green}."
+	}
+	"Stop conquer time"
+	{
+		"nl"			"Het instellen van tijd die nodig is om vlag te vangen geannuleerd"
+	}
+	"Conquer time out of range"
+	{
+		// 1: Entered value
+		"nl"			"De waarde moet op zijn minste {default}1{green} zijn. Je voegde{default}{1}{green} in. Probeer opnieuw."
+	}
+	"Conquer time changed"
+	{
+		// 1: Old value, 2: New value
+		"nl"			"Wijzigde tijd die nodig is om vlag te vangen van {default}{1}{green} naar {default}{2}{green}."
+	}
+}

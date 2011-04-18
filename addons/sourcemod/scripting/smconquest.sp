@@ -18,6 +18,7 @@
 #pragma semicolon 1
 #include <sourcemod>
 #include <sdktools>
+#include <clientprefs>
 #include <sdkhooks>
 #include <cstrike>
 #include <colors>
@@ -58,19 +59,29 @@ new Handle:g_hCVTeamScore;
 new Handle:g_hCVRemoveObjectives;
 new Handle:g_hCVCaptureMoney;
 new Handle:g_hCVRemoveDroppedWeapons;
+new Handle:g_hCVEnforceTimelimit;
 
 // Tag
 new Handle:g_hSVTags; 
 
+// Respawning and spawnprotection
 new Handle:g_hRespawnPlayer[MAXPLAYERS+2] = {INVALID_HANDLE,...};
 new Handle:g_hRemoveSpawnProtection[MAXPLAYERS+2] = {INVALID_HANDLE,...};
 
+// Enforce map timelimit
+new Handle:g_hTimeLimitEnforcer = INVALID_HANDLE;
+new g_iMapStartTime = 0;
+new g_iTimeLimit = 0;
+
+// Weapondrop ammo regive to the correct ammotype
 new g_iPlayerActiveSlot[MAXPLAYERS+2] = {-1,...};
+// Remove dropped weapons every 20 seconds
 new Handle:g_hRemoveWeapons = INVALID_HANDLE;
 
 // CCSPlayer::m_iAccount offset
 new g_iAccount = -1;
 
+#include "smconquest_clientpref.sp"
 #include "smconquest_flags.sp"
 #include "smconquest_classes.sp"
 #include "smconquest_buymenu.sp"
@@ -109,6 +120,7 @@ public OnPluginStart()
 	g_hCVRemoveObjectives = CreateConVar("sm_conquest_removeobjectives", "1", "Remove all bomb/hostage related stuff to prevent round end?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_hCVCaptureMoney = CreateConVar("sm_conquest_capturemoney", "500", "How much money should all players earn for capturing a flag?", FCVAR_PLUGIN, true, 0.0);
 	g_hCVRemoveDroppedWeapons = CreateConVar("sm_conquest_removedroppedweapons", "1", "Should we remove dropped weapons in a certain interval?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_hCVEnforceTimelimit = CreateConVar("sm_conquest_enforcetimelimit", "1", "End the game when the mp_timelimit is over - even midround?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	
 	g_hSVTags = FindConVar("sv_tags");
 	
@@ -159,6 +171,14 @@ public OnPluginStart()
 	// Hook chat for flag admin
 	RegConsoleCmd("say", Command_Say);
 	RegConsoleCmd("say_team", Command_Say);
+	
+	// Init Clientprefs
+	CreateClientCookies();
+	
+	// Force the timelimit, even if the round never ends
+	new Handle:hTimeLimit = FindConVar("mp_timelimit");
+	HookConVarChange(hTimeLimit, ConVar_TimeLimitChanged);
+	g_iTimeLimit = GetConVarInt(hTimeLimit)*60;
 	
 	AutoExecConfig(true, "plugin.smconquest");
 	
@@ -255,6 +275,11 @@ public OnMapStart()
 	
 	MyAddServerTag("conquest");
 	
+	// Enforce the timelimit
+	g_iMapStartTime = GetTime();
+	if(GetConVarBool(g_hCVEnforceTimelimit))
+		g_hTimeLimitEnforcer = CreateTimer(10.0, Timer_CheckTimeLimit, _, TIMER_FLAG_NO_MAPCHANGE|TIMER_REPEAT);
+	
 	// Show the flag status
 	CreateTimer(0.5, Timer_OnUpdateStatusPanel, _, TIMER_FLAG_NO_MAPCHANGE|TIMER_REPEAT);
 }
@@ -278,6 +303,13 @@ public OnMapEnd()
 	{
 		KillTimer(g_hRemoveWeapons);
 		g_hRemoveWeapons = INVALID_HANDLE;
+	}
+	
+	g_iMapStartTime = 0;
+	if(g_hTimeLimitEnforcer != INVALID_HANDLE)
+	{
+		KillTimer(g_hTimeLimitEnforcer);
+		g_hTimeLimitEnforcer = INVALID_HANDLE;
 	}
 }
 
@@ -358,6 +390,8 @@ public OnClientDisconnect(client)
 	g_bPlayerSetsRequiredPlayers[client] = false;
 	g_bPlayerSetsConquerTime[client] = false;
 	
+	ResetCookieCache(client);
+	
 	if(GetConVarBool(g_hCVDropAmmo) && IsClientInGame(client))
 	{
 		// Remove weapons and put an ammo box instead
@@ -432,7 +466,7 @@ public Action:Event_OnPlayerSpawn(Handle:event, const String:name[], bool:dontBr
 		{
 			Client_RemoveAllWeapons(client, "weapon_knife", true);
 			// Set the class with a delay
-			g_hApplyPlayerClass[client] = CreateTimer(0.5,Timer_ApplyPlayerClass, userid, TIMER_FLAG_NO_MAPCHANGE);
+			g_hApplyPlayerClass[client] = CreateTimer(0.5, Timer_ApplyPlayerClass, userid, TIMER_FLAG_NO_MAPCHANGE);
 		}
 	}
 	
@@ -519,6 +553,7 @@ public Action:Event_OnPlayerTeam(Handle:event, const String:name[], bool:dontBro
 	new userid = GetEventInt(event, "userid");
 	new client = GetClientOfUserId(userid);
 	new team = GetEventInt(event, "team");
+	new oldteam = GetEventInt(event, "oldteam");
 	RemovePlayerFromAllZones(client);
 	
 	// Stop giving him the weapons
@@ -530,6 +565,10 @@ public Action:Event_OnPlayerTeam(Handle:event, const String:name[], bool:dontBro
 	
 	// Don't do anything, if no flags for that map -> "disabled"
 	if(GetArraySize(g_hFlags) == 0)
+		return Plugin_Continue;
+	
+	// Don't care, if he's joining the same team again :P
+	if(oldteam == team)
 		return Plugin_Continue;
 	
 	if(team > CS_TEAM_SPECTATOR)
@@ -547,14 +586,51 @@ public Action:Event_OnPlayerTeam(Handle:event, const String:name[], bool:dontBro
 			Client_PrintKeyHintText(client, "%t", "Respawn in x seconds", iRespawnTime);
 		}
 		
-		g_iPlayerClass[client] = -1;
-		g_iPlayerTempClass[client] = -1;
-		g_iPlayerWeaponSet[client] = -1;
+		// Reset the class, if it's team specific or full in the new team
+		if(g_iPlayerClass[client] != -1)
+		{
+			new Handle:hClass = GetArrayCell(g_hClasses, g_iPlayerClass[client]);
+			
+			// The current class needs to be for both teams
+			new iTeam = GetArrayCell(hClass, CLASS_TEAM);
+			if(iTeam == 0)
+			{
+				// Check if the class is already full in the new team.
+				new iCurrentPlayers = GetTotalPlayersInClass(g_iPlayerClass[client], team);
+				new iLimit = GetArrayCell(hClass, CLASS_LIMIT);
+				if(iLimit != 0 && iCurrentPlayers >= iLimit)
+				{
+					// The class is full in the new team. Reset to default.
+					g_iPlayerClass[client] = -1;
+					g_iPlayerTempClass[client] = -1;
+					g_iPlayerWeaponSet[client] = -1;
+					// Apply the class directly again
+					g_bPlayerJustJoined[client] = true;
+				}
+			}
+			// This one is team specific. Reset to default.
+			else
+			{
+				g_iPlayerClass[client] = -1;
+				g_iPlayerTempClass[client] = -1;
+				g_iPlayerWeaponSet[client] = -1;
+				// Apply the class directly again
+				g_bPlayerJustJoined[client] = true;
+			}
+		}
+		// No class assigned before. Reset just to be sure;)
+		else
+		{
+			g_iPlayerTempClass[client] = -1;
+			g_iPlayerWeaponSet[client] = -1;
+			// Apply the class directly again
+			g_bPlayerJustJoined[client] = true;
+		}
 		
 		if(GetConVarBool(g_hCVUseClasses))
 		{
 			// Set the class with a delay
-			g_hApplyPlayerClass[client] = CreateTimer(0.5,Timer_ApplyPlayerClass, userid, TIMER_FLAG_NO_MAPCHANGE);
+			g_hApplyPlayerClass[client] = CreateTimer(0.5, Timer_ApplyPlayerClass, userid, TIMER_FLAG_NO_MAPCHANGE);
 		}
 	}
 	
@@ -625,7 +701,7 @@ public Action:Event_OnRoundStart(Handle:event, const String:name[], bool:dontBro
 	
 	if(GetConVarBool(g_hCVRemoveDroppedWeapons))
 	{
-		g_hRemoveWeapons = CreateTimer(20.0, Timer_OnRemoveWeapons, _, TIMER_FLAG_NO_MAPCHANGE);
+		g_hRemoveWeapons = CreateTimer(20.0, Timer_OnRemoveWeapons, _, TIMER_FLAG_NO_MAPCHANGE|TIMER_REPEAT);
 	}
 	
 	return Plugin_Continue;
@@ -707,8 +783,11 @@ public Action:Hook_OnWeaponDrop(client, weapon)
 		}
 		return Plugin_Handled;
 	}
-	// Don't drop grenades
-	return Plugin_Handled;
+	// Drop grenades.
+	// Need to do that, since we actually "drop" the grenade, when throwing it.
+	// If we "block" it here, it still get's thrown, but the player don't change to his previous weapon, but stays empty-handed :O
+	// We can remove them later on, with our OnRemoveWeapons timer
+	return Plugin_Continue;
 }
 
 // Keep track of which weapon the player is holding for dropping the correct ammo on death.
@@ -955,6 +1034,40 @@ public Action:Timer_OnRemoveWeapons(Handle:timer, any:data)
 			AcceptEntityInput(i, "Kill");
 	}
 	return Plugin_Continue;
+}
+
+// Force the timelimit set with mp_timelimit, even midround
+public Action:Timer_CheckTimeLimit(Handle:timer, any:data)
+{
+	if(g_iTimeLimit != 0 && (GetTime() - g_iMapStartTime) >= g_iTimeLimit)
+	{
+		new iGameEnd  = FindEntityByClassname(-1, "game_end");
+		if (iGameEnd == -1 && (iGameEnd = CreateEntityByName("game_end")) == -1) 
+		{
+			LogError("Unable to create entity \"game_end\"!");
+		} 
+		else 
+		{
+			g_hTimeLimitEnforcer = INVALID_HANDLE;
+			AcceptEntityInput(iGameEnd, "EndGame");
+			return Plugin_Stop;
+		}
+	}
+	
+	return Plugin_Continue;
+}
+
+/**
+ * 
+ * ConVar Change Callbacks
+ */ 
+ 
+public ConVar_TimeLimitChanged(Handle:convar, const String:oldValue[], const String:newValue[])
+{
+	if(!StrEqual(oldValue, newValue))
+	{
+		g_iTimeLimit = StringToInt(newValue)*60;
+	}
 }
 
 /**

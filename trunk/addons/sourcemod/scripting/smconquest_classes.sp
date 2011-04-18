@@ -130,8 +130,6 @@ public Menu_SelectWeaponSet(Handle:menu, MenuAction:action, param1, param2)
 		
 		new iWeaponSet = StringToInt(info);
 		
-		
-		
 		decl String:sWeapon[64];
 		new Handle:hWeaponSets = GetArrayCell(hClass, CLASS_WEAPONSETS);
 		new Handle:hWeapons = GetArrayCell(hWeaponSets, iWeaponSet);

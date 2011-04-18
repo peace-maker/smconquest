@@ -496,13 +496,13 @@ public Action:Timer_OnUpdateStatusPanel(Handle:timer, any:data)
 			{
 				Format(sStatusString, sizeof(sStatusString), "%s[r]", sStatusString);
 				if(bUseHudMsg)
-					PrintHudMsgToClient(0, i, fScreenStart+(i==0?0.0:float(i)*10.0/100.0), 0.01, g_iRedHudMsg, g_iRedHudMsg, HUDMSG_FADEINOUT, 0.0, 0.0, 0.6, 1.0, "A");
+					PrintHudMsgToAllWhoWant(i, fScreenStart+(i==0?0.0:float(i)*10.0/100.0), 0.01, g_iRedHudMsg, g_iRedHudMsg, HUDMSG_FADEINOUT, 0.0, 0.0, 0.6, 1.0, "A");
 			}
 			else
 			{
 				Format(sStatusString, sizeof(sStatusString), "%s[b]", sStatusString);
 				if(bUseHudMsg)
-					PrintHudMsgToClient(0, i, fScreenStart+(i==0?0.0:float(i)*10.0/100.0), 0.01, g_iBlueHudMsg, g_iBlueHudMsg, HUDMSG_FADEINOUT, 0.0, 0.0, 0.6, 1.0, "A");
+					PrintHudMsgToAllWhoWant(i, fScreenStart+(i==0?0.0:float(i)*10.0/100.0), 0.01, g_iBlueHudMsg, g_iBlueHudMsg, HUDMSG_FADEINOUT, 0.0, 0.0, 0.6, 1.0, "A");
 			}
 		}
 		else
@@ -515,25 +515,32 @@ public Action:Timer_OnUpdateStatusPanel(Handle:timer, any:data)
 				{
 					Format(sStatusString, sizeof(sStatusString), "%s[R]", sStatusString);
 					if(bUseHudMsg)
-						PrintHudMsgToClient(0, i, fScreenStart+(i==0?0.0:float(i)*10.0/100.0), 0.01, g_iRedHudMsg, g_iRedHudMsg, HUDMSG_FADEINOUT, 0.0, 0.0, 0.6, 1.0, "#");
+						PrintHudMsgToAllWhoWant(i, fScreenStart+(i==0?0.0:float(i)*10.0/100.0), 0.01, g_iRedHudMsg, g_iRedHudMsg, HUDMSG_FADEINOUT, 0.0, 0.0, 0.6, 1.0, "#");
 				}
 				case CS_TEAM_CT:
 				{
 					Format(sStatusString, sizeof(sStatusString), "%s[B]", sStatusString);
 					if(bUseHudMsg)
-						PrintHudMsgToClient(0, i, fScreenStart+(i==0?0.0:float(i)*10.0/100.0), 0.01, g_iBlueHudMsg, g_iBlueHudMsg, HUDMSG_FADEINOUT, 0.0, 0.0, 0.6, 1.0, "$");
+						PrintHudMsgToAllWhoWant(i, fScreenStart+(i==0?0.0:float(i)*10.0/100.0), 0.01, g_iBlueHudMsg, g_iBlueHudMsg, HUDMSG_FADEINOUT, 0.0, 0.0, 0.6, 1.0, "$");
 				}
 				default:
 				{
 					Format(sStatusString, sizeof(sStatusString), "%s[-]", sStatusString);
 					if(bUseHudMsg)
-						PrintHudMsgToClient(0, i, fScreenStart+(i==0?0.0:float(i)*10.0/100.0), 0.01, {255,255,255,200}, {255,255,255,255}, HUDMSG_FADEINOUT, 0.0, 0.0, 0.6, 1.0, "&");
+						PrintHudMsgToAllWhoWant(i, fScreenStart+(i==0?0.0:float(i)*10.0/100.0), 0.01, {255,255,255,200}, {255,255,255,255}, HUDMSG_FADEINOUT, 0.0, 0.0, 0.6, 1.0, "&");
 				}
 			}
 		}
 	}
 	
-	PrintHintTextToAll(sStatusString);
+	// Only show the hint status text to players who want it
+	for(new i=1;i<=MaxClients;i++)
+	{
+		if(IsClientInGame(i) && g_bUseHintStatus[i])
+		{
+			PrintHintText(i, sStatusString);
+		}
+	}
 	
 	return Plugin_Continue;
 }
@@ -882,7 +889,7 @@ GetTeamOfPlayersInZone(iIndex)
 }
 
 /**
- * Prints a message to a random position on the cliens hud
+ * Prints a message to a random position on the clients hud
  * NOTE: Does not work in CS:S and DOD:S until clients edit their ClientScheme.
  * This needs to be added to the Fonts section of resource/ClientScheme.res:
  
@@ -899,7 +906,8 @@ CenterPrintText
 }
 
  *
- * @param client		The client send the message to. Pass 0 to send to all.
+ * @param clients		An array of clients to show the box to.
+ * @param numClients	Number of players in the array.
  * @param channel		channel, must be in range <0,5>
  * @param x				x, must be in range <0.0,1.0>; -1 center in x dimension
  * @param y				y coordinate of the bottom left corner of the first char. -1 for center
@@ -915,25 +923,22 @@ CenterPrintText
  * @noreturn
  */
 
-stock PrintHudMsgToClient(client, 
-						  const channel,
-						  const Float:x, 
-						  const Float:y, 
-						  const secondColor[4], 
-						  const initColor[4], 
-						  effect = HUDMSG_FADEINOUT, 
-						  Float:fadeInTime = 1.0, 
-						  Float:fadeOutTime = 1.0, 
-						  const Float:holdTime, 
-						  Float:fxTime = 1.0, 
-						  const String:szMsg[], 
-						  any:...)
+stock PrintHudMsg(clients[], 
+				  numClients, 
+				  const channel,
+				  const Float:x, 
+				  const Float:y, 
+				  const secondColor[4], 
+				  const initColor[4], 
+				  effect = HUDMSG_FADEINOUT, 
+				  Float:fadeInTime = 1.0, 
+				  Float:fadeOutTime = 1.0, 
+				  const Float:holdTime, 
+				  Float:fxTime = 1.0, 
+				  const String:szMsg[], 
+				  any:...)
 {
-	new Handle:hBf;
-	if(!client)
-		hBf = StartMessageAll("HudMsg");
-	else
-		hBf = StartMessageOne("HudMsg", client);
+	new Handle:hBf = StartMessage("HudMsg", clients, numClients);
 		
 	BfWriteByte(hBf, channel); //channel
 	BfWriteFloat(hBf, x); // x ( -1 = center )
@@ -955,9 +960,134 @@ stock PrintHudMsgToClient(client,
 	BfWriteFloat(hBf, fxTime); //fxtime (effect type(2) used)
 	
 	decl String:sBuffer[512];
-	SetGlobalTransTarget(client);
-	VFormat(sBuffer, sizeof(sBuffer), szMsg, 12);
+	//SetGlobalTransTarget(client);
+	VFormat(sBuffer, sizeof(sBuffer), szMsg, 13);
 	
 	BfWriteString(hBf, sBuffer); //Message
 	EndMessage();
+}
+
+/**
+ * Prints a message to a random position on one client's hud
+ * 
+ * Ported from eventscripts vecmath library.
+ *
+ *
+ * @param client		The client to show the text to.
+ * @param channel		channel, must be in range <0,5>
+ * @param x				x, must be in range <0.0,1.0>; -1 center in x dimension
+ * @param y				y coordinate of the bottom left corner of the first char. -1 for center
+ * @param secondColor	RGBA colors for second color
+ * @param initColor		RGBA colors for init color
+ * @param effect		fade in/fade out, 1 - flickery credits, 2 - write out (training room)
+ * @param fadeInTime	fade in, message fade in time - per character in effect 2
+ * @param fadeOutTime	fade out, message fade out time
+ * @param holdTime		holdtime, stay on the screen for this long
+ * @param fxTime		Used by HUDMSG_WRITEOUT (effect 2)
+ * @param szMsg			message, max size 512
+ * @param ...			Variable number of format parameters.
+ * @noreturn
+ */
+stock PrintHudMsgToClient(client,
+						  const channel,
+						  const Float:x, 
+						  const Float:y, 
+						  const secondColor[4], 
+						  const initColor[4], 
+						  effect = HUDMSG_FADEINOUT, 
+						  Float:fadeInTime = 1.0, 
+						  Float:fadeOutTime = 1.0, 
+						  const Float:holdTime, 
+						  Float:fxTime = 1.0, 
+						  const String:szMsg[], 
+						  any:...)
+{
+	new clients[1];
+	clients[0] = client;
+	
+	decl String:sBuffer[512];
+	SetGlobalTransTarget(client);
+	VFormat(sBuffer, sizeof(sBuffer), szMsg, 12);
+	
+	PrintHudMsg(clients, 1, channel, x, y, secondColor, initColor, effect, fadeInTime, fadeOutTime, holdTime, fxTime, sBuffer);
+}
+
+/**
+ * Prints a message to a random position on all clients hud
+ * 
+ * Ported from eventscripts vecmath library.
+ *
+ *
+ * @param channel		channel, must be in range <0,5>
+ * @param x				x, must be in range <0.0,1.0>; -1 center in x dimension
+ * @param y				y coordinate of the bottom left corner of the first char. -1 for center
+ * @param secondColor	RGBA colors for second color
+ * @param initColor		RGBA colors for init color
+ * @param effect		fade in/fade out, 1 - flickery credits, 2 - write out (training room)
+ * @param fadeInTime	fade in, message fade in time - per character in effect 2
+ * @param fadeOutTime	fade out, message fade out time
+ * @param holdTime		holdtime, stay on the screen for this long
+ * @param fxTime		Used by HUDMSG_WRITEOUT (effect 2)
+ * @param szMsg			message, max size 512
+ * @param ...			Variable number of format parameters.
+ * @noreturn
+ */
+stock PrintHudMsgToAll(const channel,
+					   const Float:x, 
+					   const Float:y, 
+					   const secondColor[4], 
+					   const initColor[4], 
+					   effect = HUDMSG_FADEINOUT, 
+					   Float:fadeInTime = 1.0, 
+					   Float:fadeOutTime = 1.0, 
+					   const Float:holdTime, 
+					   Float:fxTime = 1.0, 
+					   const String:szMsg[], 
+					   any:...)
+{
+	new total = 0;
+	new clients[MaxClients];
+	for (new i=1; i<=MaxClients; i++)
+	{
+		if (IsClientInGame(i))
+		{
+			clients[total++] = i;
+		}
+	}
+	
+	decl String:sBuffer[512];
+	VFormat(sBuffer, sizeof(sBuffer), szMsg, 11);
+	
+	PrintHudMsg(clients, total, channel, x, y, secondColor, initColor, effect, fadeInTime, fadeOutTime, holdTime, fxTime, sBuffer);
+}
+
+// Respect the clientpref cookie setting
+PrintHudMsgToAllWhoWant(const channel,
+					   const Float:x, 
+					   const Float:y, 
+					   const secondColor[4], 
+					   const initColor[4], 
+					   effect = HUDMSG_FADEINOUT, 
+					   Float:fadeInTime = 1.0, 
+					   Float:fadeOutTime = 1.0, 
+					   const Float:holdTime, 
+					   Float:fxTime = 1.0, 
+					   const String:szMsg[], 
+					   any:...)
+{
+	new total = 0;
+	new clients[MaxClients];
+	for (new i=1; i<=MaxClients; i++)
+	{
+		if (IsClientInGame(i) && g_bUseHUD[i])
+		{
+			clients[total++] = i;
+		}
+	}
+	
+	decl String:sBuffer[512];
+	VFormat(sBuffer, sizeof(sBuffer), szMsg, 11);
+	
+	if(total > 0)
+		PrintHudMsg(clients, total, channel, x, y, secondColor, initColor, effect, fadeInTime, fadeOutTime, holdTime, fxTime, sBuffer);
 }

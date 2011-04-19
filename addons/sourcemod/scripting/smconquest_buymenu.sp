@@ -102,7 +102,7 @@ public Menu_BuyItem(Handle:menu, MenuAction:action, param1, param2)
 		else if(StrEqual(sExplode[0], "item_assaultsuit", false))
 		{
 			SetEntProp(param1, Prop_Send, "m_ArmorValue", 100);
-			SetEntProp(param1, Prop_Send, "m_bHasHelment", 1);
+			SetEntProp(param1, Prop_Send, "m_bHasHelmet", 1);
 		}
 		else
 		{

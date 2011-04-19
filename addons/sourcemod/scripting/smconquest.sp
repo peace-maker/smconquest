@@ -266,7 +266,7 @@ public OnMapStart()
 	
 	// Have to precache radio sounds to block them
 	PrecacheSound("radio/ctwin.wav", false);
-	PrecacheSound("radio/terwin.wav", false);	
+	PrecacheSound("radio/terwin.wav", false);
 	
 	PrecacheModel(PRIMARYAMMO_MODEL, true);
 	PrecacheModel(SECONDARYAMMO_MODEL, true);
@@ -285,7 +285,8 @@ public OnMapStart()
 	
 	MyAddServerTag("conquest");
 	
-	new iPlayerManager = FindEntityByClassname(MaxClients, "cs_player_manager");
+	// Hook the player_manager, to show people on radar
+	new iPlayerManager = FindEntityByClassname(0, "cs_player_manager");
 	SDKHook(iPlayerManager, SDKHook_ThinkPost, Hook_OnPlayerManagerThinkPost);
 	
 	// Enforce the timelimit

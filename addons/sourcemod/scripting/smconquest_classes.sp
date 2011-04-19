@@ -307,7 +307,7 @@ GivePlayerClassWeapons(client, iClass, iWeaponSet)
 		else if(StrEqual(sWeapon, "item_assaultsuit", false))
 		{
 			SetEntProp(client, Prop_Send, "m_ArmorValue", GetArrayCell(hWeaponList, i+1));
-			SetEntProp(client, Prop_Send, "m_bHasHelment", 1);
+			SetEntProp(client, Prop_Send, "m_bHasHelmet", 1);
 		}
 		else if(StrEqual(sWeapon, "health", false))
 		{

@@ -406,7 +406,7 @@ public Action:Timer_OnConquerFlag(Handle:timer, any:iIndex)
 		{
 			if(IsClientInGame(i) && g_bFadeClientScreen[i])
 			{
-				Client_ScreenFade(i, 1, FFADE_OUT|FFADE_PURGE, 1, iColor[0], iColor[1], iColor[2], 150, true);
+				Client_ScreenFade(i, 150, FFADE_IN|FFADE_PURGE, 5, iColor[0], iColor[1], iColor[2], 120, false);
 			}
 		}
 	}
@@ -579,7 +579,7 @@ public Hook_OnPlayerManagerThinkPost(entity)
 		return;
 	
 	// Serveradmin don't want this feature?
-	if(GetConVarBool(g_hCVShowOnRadar))
+	if(!GetConVarBool(g_hCVShowOnRadar))
 		return;
 	
 	// Loop through all flags and check for enemies near own flag
@@ -597,12 +597,8 @@ public Hook_OnPlayerManagerThinkPost(entity)
 		hPlayers = GetArrayCell(g_hPlayersInZone, f);
 		iNumPlayers = GetArraySize(hPlayers);
 		
-		// Don't care, if there are no players near that flag
-		if(iNumPlayers == 0)
-			continue;
-		
 		// Loop through all players and show them in the radar, if they're near a flag
-		for(new i=1;i<=iNumPlayers;i++)
+		for(new i=0;i<iNumPlayers;i++)
 		{
 			iClient = GetArrayCell(hPlayers, i);
 			// Show the player, if he's not in the team controlling the flag

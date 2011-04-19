@@ -35,6 +35,8 @@ new Handle:g_hPlayersInZone;
 new g_iRedHudMsg[4] = {206, 24, 25, 200};
 new g_iBlueHudMsg[4] = {25, 128, 194, 200};
 
+new g_iPlayerSpottedOffset = -1;
+
 /**
  * Entity Output Handlers
  */
@@ -562,6 +564,55 @@ public Action:Timer_OnUpdateStatusPanel(Handle:timer, any:data)
 	}
 	
 	return Plugin_Continue;
+}
+
+/**
+ * SDKHook callbacks
+ */
+
+// Show enemies on radar, if they're near to a flag controlled by the player's team
+public Hook_OnPlayerManagerThinkPost(entity)
+{
+	// Don't do anything, if no flags for that map -> "disabled"
+	new iSize = GetArraySize(g_hFlags);
+	if(iSize == 0)
+		return;
+	
+	// Serveradmin don't want this feature?
+	if(GetConVarBool(g_hCVShowOnRadar))
+		return;
+	
+	// Loop through all flags and check for enemies near own flag
+	new Handle:hFlag, Handle:hPlayers;
+	new iTeam, iNumPlayers, iClient;
+	for(new f=0;f<iSize;f++)
+	{
+		hFlag = GetArrayCell(g_hFlags, f);
+		iTeam = GetArrayCell(hFlag, FLAG_CURRENTTEAM);
+		
+		// Skip this flag, if no team controls it.
+		if(iTeam == 0)
+			continue;
+		
+		hPlayers = GetArrayCell(g_hPlayersInZone, f);
+		iNumPlayers = GetArraySize(hPlayers);
+		
+		// Don't care, if there are no players near that flag
+		if(iNumPlayers == 0)
+			continue;
+		
+		// Loop through all players and show them in the radar, if they're near a flag
+		for(new i=1;i<=iNumPlayers;i++)
+		{
+			iClient = GetArrayCell(hPlayers, i);
+			// Show the player, if he's not in the team controlling the flag
+			if(GetClientTeam(iClient) != iTeam)
+			{
+				// Show him
+				SetEntData(entity, g_iPlayerSpottedOffset+iClient, 1, 4, true);
+			}
+		}
+	}
 }
 
 /**

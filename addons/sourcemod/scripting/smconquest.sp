@@ -61,6 +61,7 @@ new Handle:g_hCVCaptureMoney;
 new Handle:g_hCVRemoveDroppedWeapons;
 new Handle:g_hCVEnforceTimelimit;
 new Handle:g_hCVFadeOnConquer;
+new Handle:g_hCVShowOnRadar;
 
 // Tag
 new Handle:g_hSVTags; 
@@ -123,6 +124,7 @@ public OnPluginStart()
 	g_hCVRemoveDroppedWeapons = CreateConVar("sm_conquest_removedroppedweapons", "20", "How often should we remove dropped weapons in x seconds interval?", FCVAR_PLUGIN, true, 0.0);
 	g_hCVEnforceTimelimit = CreateConVar("sm_conquest_enforcetimelimit", "1", "End the game when the mp_timelimit is over - even midround?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_hCVFadeOnConquer = CreateConVar("sm_conquest_fadeonconquer", "1", "Fade the screen in the flag color for all players on conquer?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_hCVShowOnRadar = CreateConVar("sm_conquest_showonradar", "1", "Should enemies near an conquered flag appear on the radar of the team controlling the flag?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	
 	g_hSVTags = FindConVar("sv_tags");
 	
@@ -143,6 +145,12 @@ public OnPluginStart()
 	if(g_iAccount == -1)
 	{
 		SetFailState("Can't find CCSPlayer::m_iAccount offset.");
+	}
+	
+	g_iPlayerSpottedOffset = FindSendPropOffs("CCSPlayerResource", "m_bPlayerSpotted");
+	if(g_iPlayerSpottedOffset == -1)
+	{
+		SetFailState("Can't find CCSPlayerResource::m_bPlayerSpotted offset.");
 	}
 	
 	g_hGameConfig = LoadGameConfigFile("conquest.games");
@@ -276,6 +284,9 @@ public OnMapStart()
 	ParseBuyConfig();
 	
 	MyAddServerTag("conquest");
+	
+	new iPlayerManager = FindEntityByClassname(MaxClients, "cs_player_manager");
+	SDKHook(iPlayerManager, SDKHook_ThinkPost, Hook_OnPlayerManagerThinkPost);
 	
 	// Enforce the timelimit
 	g_iMapStartTime = GetTime();

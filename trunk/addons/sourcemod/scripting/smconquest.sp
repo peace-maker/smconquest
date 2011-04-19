@@ -60,6 +60,7 @@ new Handle:g_hCVRemoveObjectives;
 new Handle:g_hCVCaptureMoney;
 new Handle:g_hCVRemoveDroppedWeapons;
 new Handle:g_hCVEnforceTimelimit;
+new Handle:g_hCVFadeOnConquer;
 
 // Tag
 new Handle:g_hSVTags; 
@@ -119,8 +120,9 @@ public OnPluginStart()
 	g_hCVTeamScore = CreateConVar("sm_conquest_teamscore", "1", "How many points should a team earn when conquering all flags?", FCVAR_PLUGIN, true, 0.0);
 	g_hCVRemoveObjectives = CreateConVar("sm_conquest_removeobjectives", "1", "Remove all bomb/hostage related stuff to prevent round end?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_hCVCaptureMoney = CreateConVar("sm_conquest_capturemoney", "500", "How much money should all players earn for capturing a flag?", FCVAR_PLUGIN, true, 0.0);
-	g_hCVRemoveDroppedWeapons = CreateConVar("sm_conquest_removedroppedweapons", "1", "Should we remove dropped weapons in a certain interval?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_hCVRemoveDroppedWeapons = CreateConVar("sm_conquest_removedroppedweapons", "20", "How often should we remove dropped weapons in x seconds interval?", FCVAR_PLUGIN, true, 0.0);
 	g_hCVEnforceTimelimit = CreateConVar("sm_conquest_enforcetimelimit", "1", "End the game when the mp_timelimit is over - even midround?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_hCVFadeOnConquer = CreateConVar("sm_conquest_fadeonconquer", "1", "Fade the screen in the flag color for all players on conquer?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	
 	g_hSVTags = FindConVar("sv_tags");
 	
@@ -699,9 +701,10 @@ public Action:Event_OnRoundStart(Handle:event, const String:name[], bool:dontBro
 		g_hRemoveWeapons = INVALID_HANDLE;
 	}
 	
-	if(GetConVarBool(g_hCVRemoveDroppedWeapons))
+	new Float:fRemoveInterval = GetConVarFloat(g_hCVRemoveDroppedWeapons);
+	if(fRemoveInterval > 0.0)
 	{
-		g_hRemoveWeapons = CreateTimer(20.0, Timer_OnRemoveWeapons, _, TIMER_FLAG_NO_MAPCHANGE|TIMER_REPEAT);
+		g_hRemoveWeapons = CreateTimer(fRemoveInterval, Timer_OnRemoveWeapons, _, TIMER_FLAG_NO_MAPCHANGE|TIMER_REPEAT);
 	}
 	
 	return Plugin_Continue;
@@ -1016,7 +1019,7 @@ public Action:Timer_ReaddAmmo(Handle:timer, any:data)
 
 public Action:Timer_OnRemoveWeapons(Handle:timer, any:data)
 {
-	if(!GetConVarBool(g_hCVRemoveDroppedWeapons))
+	if(GetConVarFloat(g_hCVRemoveDroppedWeapons) == 0.0)
 	{
 		g_hRemoveWeapons = INVALID_HANDLE;
 		return Plugin_Stop;

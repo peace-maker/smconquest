@@ -12,6 +12,7 @@
  * 
  * Changelog:
  * 1.0 (06.04.2011): Initial release
+ * 1.1 (20.04.2011): See changelog.txt
  *
  * visit http://www.wcfan.de/
  */
@@ -25,7 +26,7 @@
 #include <smlib>
 #include <loghelper>
 
-#define PLUGIN_VERSION "1.0"
+#define PLUGIN_VERSION "1.1"
 
 #define PREFIX "{olive}SM:Conquest {default}>{green} "
 

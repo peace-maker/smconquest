@@ -57,7 +57,7 @@
 	}
 	"Class introduction"
 	{
-		"fr"			"Ce serveur exécute {olive}SM:Conquest{green}. Choisissez votre classe et capturez tout les drapeaux!"
+		"fr"			"Ce serveur exécute {olive}SM:Conquest{green}. Choisissez votre classe et capturez tout les drapeaux! Ecris {default}!class{green} pour rechoisir une classe."
 	}
 	"Apply class"
 	{
@@ -335,5 +335,21 @@
 	{
 		// 1: Old value, 2: New value
 		"fr"			"Changement du temps de capture de {default}{1}{green} à {default}{2}{green}."
+	}
+	"Settings"
+	{
+		"fr"			"Parametres"
+	}
+	"Show top HUD"
+	{
+		"fr"			"Montrer le HUD statut des drapeaux en haut de l'écran (requiert clientfix)"
+	}
+	"Show hint HUD"
+	{
+		"fr"			"Montrer le HUD statut des drapeaux en bas de l'écran"
+	}
+	"Fade screen"
+	{
+		"fr"			"Fade écran rapide quand le drapeau est capturé?"
 	}
 }

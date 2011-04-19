@@ -57,7 +57,7 @@
 	}
 	"Class introduction"
 	{
-		"de"			"Auf diesem Server läuft {olive}SM:Conquest{green}. Wähle deine Klasse und erobere alle Flaggen!"
+		"de"			"Auf diesem Server läuft {olive}SM:Conquest{green}. Wähle deine Klasse und erobere alle Flaggen! Schreibe {default}!class{green} um neu zu wählen."
 	}
 	"Apply class"
 	{
@@ -333,5 +333,21 @@
 	{
 		// 1: Old value, 2: New value
 		"de"			"Eroberungszeit von {default}{1}{green} auf {default}{2}{green} geändert."
+	}
+	"Settings"
+	{
+		"de"			"Einstellungen"
+	}
+	"Show top HUD"
+	{
+		"de"			"Zeige den Flaggenstatus am oberen Bildschirmrand? (Benötigt clientfix)"
+	}
+	"Show hint HUD"
+	{
+		"de"			"Zeige den Flaggenstatus im Hilfefenster?"
+	}
+	"Fade screen"
+	{
+		"de"			"Färbe den Bildschirm kurz, wenn eine Flagge erobert wird?"
 	}
 }

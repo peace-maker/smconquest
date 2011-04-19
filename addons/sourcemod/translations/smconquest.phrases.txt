@@ -64,7 +64,7 @@
 	}
 	"Class introduction"
 	{
-		"en"			"This server is running {olive}SM:Conquest{green}. Choose your class and conquer all flags!"
+		"en"			"This server is running {olive}SM:Conquest{green}. Choose your class and conquer all flags! Type {default}!class{green} to repick."
 	}
 	"Apply class"
 	{
@@ -369,5 +369,21 @@
 		// 1: Old value, 2: New value
 		"#format"		"{1:d},{2:d}"
 		"en"			"Changed flag conquer time from {default}{1}{green} to {default}{2}{green}."
+	}
+	"Settings"
+	{
+		"en"			"Settings"
+	}
+	"Show top HUD"
+	{
+		"en"			"Show top HUD flag status? (Requires clientfix)"
+	}
+	"Show hint HUD"
+	{
+		"en"			"Show hint HUD flag status?"
+	}
+	"Fade screen"
+	{
+		"en"			"Fade screen shortly when a flag is conquered?"
 	}
 }

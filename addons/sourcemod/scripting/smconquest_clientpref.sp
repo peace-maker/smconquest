@@ -60,32 +60,32 @@ public Cookie_SettingsMenuHandler(client, CookieMenuAction:action, any:info, Str
 ShowSettingsMenu(client)
 {
 	new Handle:hMenu = CreateMenu(Menu_SettingsMenuHandler);
-	SetMenuTitle(hMenu, "SM:Conquest Settings");
+	SetMenuTitle(hMenu, "SM:Conquest %T", "Settings", client);
 	SetMenuExitBackButton(hMenu, true);
 	
 	decl String:sBuffer[64];
-	Format(sBuffer, sizeof(sBuffer), "Show top HUD flag status? (Requires clientfix): ");
+	Format(sBuffer, sizeof(sBuffer), "%T: ", "Show top HUD", client);
 	if(g_bUseHUD[client])
-		Format(sBuffer, sizeof(sBuffer), "%sOn", sBuffer);
+		Format(sBuffer, sizeof(sBuffer), "%s%T", sBuffer, "On", client);
 	else
-		Format(sBuffer, sizeof(sBuffer), "%sOff", sBuffer);
+		Format(sBuffer, sizeof(sBuffer), "%s%T", sBuffer, "Off", client);
 	AddMenuItem(hMenu, "usehud", sBuffer);
 	
-	Format(sBuffer, sizeof(sBuffer), "Show hint HUD flag status?: ");
+	Format(sBuffer, sizeof(sBuffer), "%T: ", "Show hint HUD", client);
 	if(g_bUseHintStatus[client])
-		Format(sBuffer, sizeof(sBuffer), "%sOn", sBuffer);
+		Format(sBuffer, sizeof(sBuffer), "%s%T", sBuffer, "On", client);
 	else
-		Format(sBuffer, sizeof(sBuffer), "%sOff", sBuffer);
+		Format(sBuffer, sizeof(sBuffer), "%s%T", sBuffer, "Off", client);
 	AddMenuItem(hMenu, "usehint", sBuffer);
 	
 	// Only show that cookie, if it's generally enabled
 	if(GetConVarBool(g_hCVFadeOnConquer))
 	{
-		Format(sBuffer, sizeof(sBuffer), "Fade screen shortly when a flag is conquered?: ");
+		Format(sBuffer, sizeof(sBuffer), "%T: ", "Fade screen", client);
 		if(g_bFadeClientScreen[client])
-			Format(sBuffer, sizeof(sBuffer), "%sOn", sBuffer);
+			Format(sBuffer, sizeof(sBuffer), "%s%T", sBuffer, "On", client);
 		else
-			Format(sBuffer, sizeof(sBuffer), "%sOff", sBuffer);
+			Format(sBuffer, sizeof(sBuffer), "%s%T", sBuffer, "Off", client);
 		AddMenuItem(hMenu, "fadescreen", sBuffer);
 	}
 	

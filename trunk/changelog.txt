@@ -1,0 +1,33 @@
+SM:Conquest Changelog
+
+http://forums.alliedmods.net/showthread.php?t=154354
+
+Legend:
+* = New feature
+- = Removed stuff
++ = Improved feature
+! = Fixed bug
+? = Other stuff
+
+(20.04.2011): Version 1.1
+-----------------------
+01. * Added sounds when a flag starts getting conquered. (Different for each team)
+02. * Added "item_kevlar" and "item_assaultsuit" handling to buymenu and classes
+03. * Added "health" and "speed" setting support to classes
+04. * Added client settings to !settings clientpref menu. (flag status HUDs and screen fading enable/disable)
+05. * Added sm_conquest_showonradar to show enemies on the radar, if they're near to a flag controlled by my team
+06. * Player earn money when conquering a flag (sm_conquest_capturemoney)
+07. * Added sm_conquest_removedroppedweapons to set the interval at which dropped weapons are removed in seconds
+08. * Added sm_conquest_fadeonconquer to fade all players screens shortly in the color of the flag on conquer
+09. * Added dutch translation by Groger
+10. + Apply the selected class directly when choosing the first time
+11. + Showing the progress bar for spectators spectating a player who's conquering a flag
+12. ! Fixed bad timer handle closing
+13. ! Fixed trying to get weapons of disconnected players
+14. ! Fixed not giving any flashbangs, when setting the amount to a value higher than 1
+15. ! Fixed wrong array indexes on flag conquer
+16. ! Fixed not removing old ammopacks on new round
+
+(06.04.2011): Version 1.0
+-----------------------
+* Initial release

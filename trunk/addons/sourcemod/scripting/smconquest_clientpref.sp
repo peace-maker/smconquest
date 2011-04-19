@@ -63,7 +63,7 @@ ShowSettingsMenu(client)
 	SetMenuTitle(hMenu, "SM:Conquest %T", "Settings", client);
 	SetMenuExitBackButton(hMenu, true);
 	
-	decl String:sBuffer[64];
+	decl String:sBuffer[128];
 	Format(sBuffer, sizeof(sBuffer), "%T: ", "Show top HUD", client);
 	if(g_bUseHUD[client])
 		Format(sBuffer, sizeof(sBuffer), "%s%T", sBuffer, "On", client);

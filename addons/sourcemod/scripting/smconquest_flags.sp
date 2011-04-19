@@ -390,6 +390,25 @@ public Action:Timer_OnConquerFlag(Handle:timer, any:iIndex)
 		SetEntProp(iClient, Prop_Send, "m_iProgressBarDuration", 0);
 	}
 	
+	// Fade the screen of all players who want it in the flag color shortly
+	if(GetConVarBool(g_hCVFadeOnConquer))
+	{
+		// Choose the right color
+		new iColor[4];
+		if(iTeam == CS_TEAM_T)
+			iColor = g_iRedHudMsg;
+		else
+			iColor = g_iBlueHudMsg;
+		
+		for(new i=1;i<=MaxClients;i++)
+		{
+			if(IsClientInGame(i) && g_bFadeClientScreen[i])
+			{
+				Client_ScreenFade(i, 1, FFADE_OUT|FFADE_PURGE, 1, iColor[0], iColor[1], iColor[2], 150, true);
+			}
+		}
+	}
+	
 	// Check for winning
 	new iSize = GetArraySize(g_hFlags), iLastTeam = -1;
 	for(new i=0;i<iSize;i++)

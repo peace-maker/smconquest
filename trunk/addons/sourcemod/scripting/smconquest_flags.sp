@@ -465,6 +465,16 @@ public Action:Timer_OnConquerFlag(Handle:timer, any:iIndex)
 					RemovePlayerFromAllZones(c);
 				}
 				
+				// Strip losers to knife
+				if(GetConVarBool(g_hCVStripLosers))
+				{
+					for(new i=1;i<=MaxClients;i++)
+					{
+						if(IsClientInGame(i) && IsPlayerAlive(i) && GetClientTeam(i) == CS_TEAM_CT)
+							Client_RemoveAllWeapons(i, "weapon_knife", true);
+					}
+				}
+				
 				// Give the team their points
 				if(iScore > 0)
 					Team_SetScore(iLastTeam, Team_GetScore(iLastTeam)+iScore);
@@ -486,6 +496,16 @@ public Action:Timer_OnConquerFlag(Handle:timer, any:iIndex)
 				for(new c=1;c<=MaxClients;c++)
 				{
 					RemovePlayerFromAllZones(c);
+				}
+				
+				// Strip losers to knife
+				if(GetConVarBool(g_hCVStripLosers))
+				{
+					for(new i=1;i<=MaxClients;i++)
+					{
+						if(IsClientInGame(i) && IsPlayerAlive(i) && GetClientTeam(i) == CS_TEAM_T)
+							Client_RemoveAllWeapons(i, "weapon_knife", true);
+					}
 				}
 				
 				// Give the team their points

@@ -157,12 +157,13 @@ public EntOut_OnStartTouch(const String:output[], caller, activator, Float:delay
 		// Play a sound
 		if(iTeam == CS_TEAM_T)
 		{
-			// Lower sound for T
-			EmitSoundToAll("ambient/alarms/klaxon1.wav", SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_LIBRARY);
+			if(strlen(g_sSoundFiles[CSOUND_REDTEAM_STARTS_CONQUERING]) > 0)
+				EmitSoundToAll(g_sSoundFiles[CSOUND_REDTEAM_STARTS_CONQUERING], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_LIBRARY);
 		}
 		else if(iTeam == CS_TEAM_CT)
 		{
-			EmitSoundToAll("plats/elevbell1.wav", SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_LIBRARY);
+			if(strlen(g_sSoundFiles[CSOUND_BLUETEAM_STARTS_CONQUERING]) > 0)
+				EmitSoundToAll(g_sSoundFiles[CSOUND_BLUETEAM_STARTS_CONQUERING], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_LIBRARY);
 		}
 		
 		// Show it now to all players, if requires more than 1
@@ -241,6 +242,18 @@ public EntOut_OnEndTouch(const String:output[], caller, activator, Float:delay)
 			SetArrayCell(hFlag, FLAG_CONQUERTIMER, hConquerTimer);
 			SetArrayCell(hFlag, FLAG_CONQUERSTARTTIME, GetTime());
 			
+			// Play a sound
+			if(iOnlyTeam == CS_TEAM_T)
+			{
+				if(strlen(g_sSoundFiles[CSOUND_REDTEAM_STARTS_CONQUERING]) > 0)
+					EmitSoundToAll(g_sSoundFiles[CSOUND_REDTEAM_STARTS_CONQUERING], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_LIBRARY);
+			}
+			else if(iOnlyTeam == CS_TEAM_CT)
+			{
+				if(strlen(g_sSoundFiles[CSOUND_BLUETEAM_STARTS_CONQUERING]) > 0)
+					EmitSoundToAll(g_sSoundFiles[CSOUND_BLUETEAM_STARTS_CONQUERING], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_LIBRARY);
+			}
+			
 			// Show it now to all players
 			for(new i=0;i<iCurrentPlayers;i++)
 			{
@@ -303,13 +316,15 @@ public Action:Timer_OnConquerFlag(Handle:timer, any:iIndex)
 	if(iTeam == CS_TEAM_T)
 	{
 		DispatchKeyValue(iFlag, "skin", "1");
-		EmitSoundToAll("conquest/v1/redflag.mp3", SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_TRAIN);
+		if(strlen(g_sSoundFiles[CSOUND_REDFLAG_CAPTURED]) > 0)
+			EmitSoundToAll(g_sSoundFiles[CSOUND_REDFLAG_CAPTURED], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_TRAIN);
 		GetArrayString(hFlag, FLAG_LOGICTRIGGERT, sBuffer, sizeof(sBuffer));
 	}
 	else if(iTeam == CS_TEAM_CT)
 	{
 		DispatchKeyValue(iFlag, "skin", "2");
-		EmitSoundToAll("conquest/v1/blueflag.mp3", SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_TRAIN);
+		if(strlen(g_sSoundFiles[CSOUND_BLUEFLAG_CAPTURED]) > 0)
+			EmitSoundToAll(g_sSoundFiles[CSOUND_BLUEFLAG_CAPTURED], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_TRAIN);
 		GetArrayString(hFlag, FLAG_LOGICTRIGGERCT, sBuffer, sizeof(sBuffer));
 	}
 	else
@@ -441,7 +456,8 @@ public Action:Timer_OnConquerFlag(Handle:timer, any:iIndex)
 					Client_SetScreenOverlayForAll("conquest/v1/red_wins.vtf");
 				}
 				// Play the winning sound
-				EmitSoundToAll("conquest/v1/redwin.mp3", SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_TRAIN);
+				if(strlen(g_sSoundFiles[CSOUND_REDTEAM_WIN]) > 0)
+					EmitSoundToAll(g_sSoundFiles[CSOUND_REDTEAM_WIN], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_TRAIN);
 				
 				// Stop any capturing
 				for(new c=1;c<=MaxClients;c++)
@@ -463,7 +479,8 @@ public Action:Timer_OnConquerFlag(Handle:timer, any:iIndex)
 					Client_SetScreenOverlayForAll("conquest/v1/blue_wins.vtf");
 				}
 				// Play the winning sound
-				EmitSoundToAll("conquest/v1/bluewin.mp3", SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_TRAIN);
+				if(strlen(g_sSoundFiles[CSOUND_BLUETEAM_WIN]) > 0)
+				EmitSoundToAll(g_sSoundFiles[CSOUND_BLUETEAM_WIN], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_TRAIN);
 				
 				// Stop any capturing
 				for(new c=1;c<=MaxClients;c++)

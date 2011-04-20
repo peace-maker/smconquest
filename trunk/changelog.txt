@@ -11,10 +11,11 @@ Legend:
 
 (20.04.2011): Version 1.2
 -----------------------
-01. ! Fixed another try to get client's weapon if he's not in game
-02. ! Fixed not being able to change the weaponset, if player already has the class and it's full now
-03. ! Fixed health and speed class settings
-04. ! Fixed adding new flags does not save to the file
+01. * Added smconquest_sounds.cfg to adjust the sounds played by the game
+02. ! Fixed another try to get client's weapon if he's not in game
+03. ! Fixed not being able to change the weaponset, if player already has the class and it's full now
+04. ! Fixed health and speed class settings
+05. ! Fixed adding new flags does not save to the file
 
 (20.04.2011): Version 1.1
 -----------------------

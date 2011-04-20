@@ -85,6 +85,19 @@ new Handle:g_hRemoveWeapons = INVALID_HANDLE;
 // CCSPlayer::m_iAccount offset
 new g_iAccount = -1;
 
+// Store the sound files configured in smconquest_sounds.cfg
+#define CSOUND_REDFLAG_CAPTURED 0
+#define CSOUND_BLUEFLAG_CAPTURED 1
+#define CSOUND_REDTEAM_WIN 2
+#define CSOUND_BLUETEAM_WIN 3
+#define CSOUND_ROUNDSTART 4
+#define CSOUND_FLAG_AMBIENCE 5
+#define CSOUND_REDTEAM_STARTS_CONQUERING 6
+#define CSOUND_BLUETEAM_STARTS_CONQUERING 7
+
+#define CSOUND_NUMSOUNDS 8
+new String:g_sSoundFiles[CSOUND_NUMSOUNDS][PLATFORM_MAX_PATH];
+
 #include "smconquest_clientpref.sp"
 #include "smconquest_flags.sp"
 #include "smconquest_classes.sp"
@@ -246,12 +259,93 @@ public OnMapStart()
 	}
 
 	// Game sounds
-	AddFileToDownloadsTable("sound/conquest/v1/redflag.mp3");
-	AddFileToDownloadsTable("sound/conquest/v1/blueflag.mp3");
-	AddFileToDownloadsTable("sound/conquest/v1/bluewin.mp3");
-	AddFileToDownloadsTable("sound/conquest/v1/redwin.mp3");
-	AddFileToDownloadsTable("sound/conquest/v1/flag.wav");
-	AddFileToDownloadsTable("sound/conquest/v1/gameon.mp3");
+	// Load from smconquest_sounds.cfg
+	new String:sFile[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/smconquest_sounds.cfg");
+	
+	// Clear the sounds as a base
+	for(new i=0;i<CSOUND_NUMSOUNDS;i++)
+		Format(g_sSoundFiles[i], PLATFORM_MAX_PATH-1, "");
+	
+	// The file exists? Sounds are disabled if not.
+	if(FileExists(sFile))
+	{
+		new Handle:hKV = CreateKeyValues("ConquestSounds");
+		decl String:sSection[64], String:sBuffer[PLATFORM_MAX_PATH];
+		FileToKeyValues(hKV, sFile);
+		if(KvGotoFirstSubKey(hKV))
+		{
+			do
+			{
+				// Is there actually a sound key?
+				KvGetString(hKV, "sound", sBuffer, sizeof(sBuffer), "-1");
+				if(!StrEqual(sBuffer, "-1"))
+				{
+					// It's in the sound folder
+					Format(sBuffer, sizeof(sBuffer), "sound/%s", sBuffer);
+					
+					// Check if we want to download that file or if it's already packed with CS:S?
+					KvGetString(hKV, "is_game_sound", sSection, sizeof(sSection), "0");
+					if(!StrEqual(sSection, "1"))
+					{
+						// Does this sound exist?
+						if(!FileExists(sBuffer))
+						{
+							LogError("Can't find sound \"%s\". Check your smconquest_sounds.cfg.", sBuffer);
+							continue;
+						}
+						
+						// Download that sound
+						AddFileToDownloadsTable(sBuffer);
+					}
+					
+					// Precache it
+					PrecacheSound(sBuffer[6], true);
+					
+					// Which sound is set?
+					KvGetSectionName(hKV, sSection, sizeof(sSection));
+					if(StrEqual(sSection, "redteam_starts_conquering"))
+					{
+						strcopy(g_sSoundFiles[CSOUND_REDTEAM_STARTS_CONQUERING], PLATFORM_MAX_PATH-1, sBuffer[6]);
+					}
+					else if(StrEqual(sSection, "blueteam_starts_conquering"))
+					{
+						strcopy(g_sSoundFiles[CSOUND_BLUETEAM_STARTS_CONQUERING], PLATFORM_MAX_PATH-1, sBuffer[6]);
+					}
+					else if(StrEqual(sSection, "redflag_captured"))
+					{
+						strcopy(g_sSoundFiles[CSOUND_REDFLAG_CAPTURED], PLATFORM_MAX_PATH-1, sBuffer[6]);
+					}
+					else if(StrEqual(sSection, "blueflag_captured"))
+					{
+						strcopy(g_sSoundFiles[CSOUND_BLUEFLAG_CAPTURED], PLATFORM_MAX_PATH-1, sBuffer[6]);
+					}
+					else if(StrEqual(sSection, "redteam_win"))
+					{
+						strcopy(g_sSoundFiles[CSOUND_REDTEAM_WIN], PLATFORM_MAX_PATH-1, sBuffer[6]);
+					}
+					else if(StrEqual(sSection, "blueteam_win"))
+					{
+						strcopy(g_sSoundFiles[CSOUND_BLUETEAM_WIN], PLATFORM_MAX_PATH-1, sBuffer[6]);
+					}
+					else if(StrEqual(sSection, "roundstart"))
+					{
+						strcopy(g_sSoundFiles[CSOUND_ROUNDSTART], PLATFORM_MAX_PATH-1, sBuffer[6]);
+					}
+					else if(StrEqual(sSection, "flag_ambience"))
+					{
+						strcopy(g_sSoundFiles[CSOUND_FLAG_AMBIENCE], PLATFORM_MAX_PATH-1, sBuffer[6]);
+					}
+				}
+			} while(KvGotoNextKey(hKV));
+		}
+		
+		CloseHandle(hKV);
+	}
+	
+	// Have to precache radio sounds to block them
+	PrecacheSound("radio/ctwin.wav", false);
+	PrecacheSound("radio/terwin.wav", false);
 	
 	PrecacheModel("models/conquest/flagv2/flag.mdl", true);
 	if(GetConVarBool(g_hCVShowWinOverlays))
@@ -259,23 +353,10 @@ public OnMapStart()
 		PrecacheDecal("conquest/v1/blue_wins.vmt", true);
 		PrecacheDecal("conquest/v1/red_wins.vmt", true);
 	}
-	PrecacheSound("conquest/v1/redflag.mp3", true);
-	PrecacheSound("conquest/v1/blueflag.mp3", true);
-	PrecacheSound("conquest/v1/bluewin.mp3", true);
-	PrecacheSound("conquest/v1/redwin.mp3", true);
-	PrecacheSound("conquest/v1/flag.wav", true);
-	PrecacheSound("conquest/v1/gameon.mp3", true);
-	
-	// Have to precache radio sounds to block them
-	PrecacheSound("radio/ctwin.wav", false);
-	PrecacheSound("radio/terwin.wav", false);
 	
 	PrecacheModel(PRIMARYAMMO_MODEL, true);
 	PrecacheModel(SECONDARYAMMO_MODEL, true);
 	PrecacheSound(AMMO_SOUND, true);
-	
-	PrecacheSound("plats/elevbell1.wav", true);
-	PrecacheSound("ambient/alarms/klaxon1.wav", true);
 	
 	g_iLaserMaterial = PrecacheModel("materials/sprites/laser.vmt", true);
 	g_iHaloMaterial = PrecacheModel("materials/sprites/halo01.vmt", true);
@@ -705,9 +786,12 @@ public Action:Event_OnRoundStart(Handle:event, const String:name[], bool:dontBro
 		g_hStartSound = INVALID_HANDLE;
 	}
 	
-	g_hStartSound = CreateTimer(3.0, Timer_OnStartSound, _, TIMER_FLAG_NO_MAPCHANGE|TIMER_REPEAT);
+	// Only play the sound, if the admin has set a valid file
+	if(strlen(g_sSoundFiles[CSOUND_FLAG_AMBIENCE]) == 0)
+		g_hStartSound = CreateTimer(3.0, Timer_OnStartSound, _, TIMER_FLAG_NO_MAPCHANGE|TIMER_REPEAT);
 	
-	EmitSoundToAll("conquest/v1/gameon.mp3");
+	if(strlen(g_sSoundFiles[CSOUND_ROUNDSTART]) > 0)
+		EmitSoundToAll(g_sSoundFiles[CSOUND_ROUNDSTART]);
 	
 	if(g_hRemoveWeapons != INVALID_HANDLE)
 	{
@@ -1017,7 +1101,7 @@ public Action:Timer_OnStartSound(Handle:timer, any:data)
 		GetArrayArray(hFlag, FLAG_POSITION, fPos, 3);
 		fPos[2] += 30.0;
 		// TODO: Restart the sound everytime a player joins, so it's heared by everyone and not only those who were present on round start! AmbientSHook?
-		EmitAmbientSound("conquest/v1/flag.wav", fPos, iFlag);
+		EmitAmbientSound(g_sSoundFiles[CSOUND_FLAG_AMBIENCE], fPos, iFlag);
 	}
 	
 	return Plugin_Stop;

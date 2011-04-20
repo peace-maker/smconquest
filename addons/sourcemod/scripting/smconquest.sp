@@ -64,6 +64,7 @@ new Handle:g_hCVRemoveDroppedWeapons;
 new Handle:g_hCVEnforceTimelimit;
 new Handle:g_hCVFadeOnConquer;
 new Handle:g_hCVShowOnRadar;
+new Handle:g_hCVStripLosers;
 
 // Tag
 new Handle:g_hSVTags; 
@@ -140,6 +141,7 @@ public OnPluginStart()
 	g_hCVEnforceTimelimit = CreateConVar("sm_conquest_enforcetimelimit", "1", "End the game when the mp_timelimit is over - even midround?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_hCVFadeOnConquer = CreateConVar("sm_conquest_fadeonconquer", "1", "Fade the screen in the flag color for all players on conquer?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_hCVShowOnRadar = CreateConVar("sm_conquest_showonradar", "1", "Should enemies near an conquered flag appear on the radar of the team controlling the flag?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_hCVStripLosers = CreateConVar("sm_conquest_striplosers", "0", "Strip the losing team to knife on round end?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	
 	g_hSVTags = FindConVar("sv_tags");
 	

@@ -325,6 +325,26 @@ GivePlayerClassWeapons(client, iClass, iWeaponSet)
 			Client_GiveWeaponAndAmmo(client, sWeapon, false, GetArrayCell(hWeaponList, i+1), -1, -1, GetArrayCell(hWeaponList, i+1));
 		}
 	}
+	
+	// Change to the primary weapon if available
+	new iWeapon;
+	if((iWeapon = Client_GetWeaponBySlot(client, CS_SLOT_PRIMARY)) != INVALID_ENT_REFERENCE && IsValidEdict(iWeapon))
+	{
+		GetEdictClassname(iWeapon, sWeapon, sizeof(sWeapon));
+		FakeClientCommand(client, "use %s", sWeapon);
+		
+		// Set the last weapon to the secondary, if available, so quick switch is working intentionally
+		if((iWeapon = Client_GetWeaponBySlot(client, CS_SLOT_SECONDARY)) != INVALID_ENT_REFERENCE && IsValidEdict(iWeapon))
+		{
+			Client_SetLastActiveWeapon(client, iWeapon);
+		}
+	}
+	// or secondary weapon
+	else if((iWeapon = Client_GetWeaponBySlot(client, CS_SLOT_SECONDARY)) != INVALID_ENT_REFERENCE && IsValidEdict(iWeapon))
+	{
+		GetEdictClassname(iWeapon, sWeapon, sizeof(sWeapon));
+		FakeClientCommand(client, "use %s", sWeapon);
+	}
 }
 
 GetTotalPlayersInClass(iClass, iTeam=0)

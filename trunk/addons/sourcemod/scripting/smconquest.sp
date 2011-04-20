@@ -13,6 +13,7 @@
  * Changelog:
  * 1.0 (06.04.2011): Initial release
  * 1.1 (20.04.2011): See changelog.txt
+ * 1.2 (20.04.2011): Small hotfixes around speed and health class settings and flag adding
  *
  * visit http://www.wcfan.de/
  */
@@ -26,7 +27,7 @@
 #include <smlib>
 #include <loghelper>
 
-#define PLUGIN_VERSION "1.1"
+#define PLUGIN_VERSION "1.2"
 
 #define PREFIX "{olive}SM:Conquest {default}>{green} "
 
@@ -811,6 +812,10 @@ public Action:Hook_OnWeaponSwitch(client, weapon)
 {
 	// Don't do anything, if no flags for that map -> "disabled"
 	if(GetArraySize(g_hFlags) == 0)
+		return Plugin_Continue;
+	
+	// If that player isn't ingame anymore, stop
+	if(!IsClientInGame(client))
 		return Plugin_Continue;
 	
 	if(Client_GetWeaponBySlot(client, CS_SLOT_PRIMARY) == weapon)

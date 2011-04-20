@@ -9,6 +9,13 @@ Legend:
 ! = Fixed bug
 ? = Other stuff
 
+(20.04.2011): Version 1.2
+-----------------------
+01. ! Fixed another try to get client's weapon if he's not in game
+02. ! Fixed not being able to change the weaponset, if player already has the class and it's full now
+03. ! Fixed health and speed class settings
+04. ! Fixed adding new flags does not save to the file
+
 (20.04.2011): Version 1.1
 -----------------------
 01. * Added sounds when a flag starts getting conquered. (Different for each team)

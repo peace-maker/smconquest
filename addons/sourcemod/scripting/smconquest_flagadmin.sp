@@ -1189,6 +1189,9 @@ public Action:Command_Say(client, args)
 		
 		CPrintToChat(client, "%s%t", PREFIX, "Add confirmation", sFlagName);
 		
+		// Save to config file
+		DumpFlagDataToFile();
+		
 		// He's editing that flag now.
 		ShowFlagOptionMenu(client, iIndex);
 		

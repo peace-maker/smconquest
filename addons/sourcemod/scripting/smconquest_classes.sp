@@ -73,7 +73,8 @@ public Menu_SelectClass(Handle:menu, MenuAction:action, param1, param2)
 		// Check, if this player got ninja'd and the limit is reached already
 		new iCurrentPlayers = GetTotalPlayersInClass(iClass, GetClientTeam(param1));
 		new iLimit = GetArrayCell(hClass, CLASS_LIMIT);
-		if(iLimit != 0 && iCurrentPlayers >= iLimit)
+		// Allow to change the weaponset, if he's already in that class.
+		if(iLimit != 0 && iCurrentPlayers >= iLimit && g_iPlayerClass[param1] != iClass)
 		{
 			CPrintToChat(param1, "%s%t", PREFIX, "Class limit reached", sClassName);
 			ShowClassMenu(param1);
@@ -121,7 +122,8 @@ public Menu_SelectWeaponSet(Handle:menu, MenuAction:action, param1, param2)
 		// Check, if this player got ninja'd and the limit is reached already
 		new iCurrentPlayers = GetTotalPlayersInClass(g_iPlayerTempClass[param1], GetClientTeam(param1));
 		new iLimit = GetArrayCell(hClass, CLASS_LIMIT);
-		if(iLimit != 0 && iCurrentPlayers >= iLimit)
+		// Allow to change the weaponset, if he's already in that class.
+		if(iLimit != 0 && iCurrentPlayers >= iLimit && g_iPlayerClass[param1] != g_iPlayerTempClass[param1])
 		{
 			CPrintToChat(param1, "%s%t", PREFIX, "Class limit reached", sClassName);
 			ShowClassMenu(param1);
@@ -311,7 +313,7 @@ GivePlayerClassWeapons(client, iClass, iWeaponSet)
 		}
 		else if(StrEqual(sWeapon, "health", false))
 		{
-			Entity_SetHealth(client, GetArrayCell(hWeaponList, i+1));
+			SetEntityHealth(client, GetArrayCell(hWeaponList, i+1));
 		}
 		else if(StrEqual(sWeapon, "speed", false))
 		{
@@ -391,6 +393,9 @@ public Action:Timer_ApplyPlayerClass(Handle:timer, any:userid)
 	new Handle:hWeaponSets = GetArrayCell(hClass, CLASS_WEAPONSETS);
 	new Handle:hWeapons = GetArrayCell(hWeaponSets, g_iPlayerWeaponSet[client]);
 	GetArrayString(hWeapons, WEAPONSET_NAME, sWeapon, sizeof(sWeapon));
+	
+	// Remove weapons again
+	Client_RemoveAllWeapons(client, "weapon_knife", true);
 	
 	// Give him the weapon
 	GivePlayerClassWeapons(client, g_iPlayerClass[client], g_iPlayerWeaponSet[client]);
@@ -602,7 +607,24 @@ public SMCResult:Config_OnKeyValue(Handle:smc, const String:key[], const String:
 			new Handle:hWeapons = GetArrayCell(hWeaponSets, g_iCurrentWeaponSetIndex);
 			new Handle:hWeaponList = GetArrayCell(hWeapons, WEAPONSET_WEAPONLIST);
 			
-			iBuffer = StringToInt(value);
+			// We have to handle the speed value seperately, since it's a double
+			new Float:fBuffer;
+			if(StrEqual(key, "speed", false))
+			{
+				fBuffer = StringToFloat(value);
+				// Set a bogous value to avoid an exception
+				iBuffer = 1;
+				if(fBuffer <= 0.0)
+				{
+					SetFailState("Error parsing classes. The speed has to be greater than 0.");
+				}
+			}
+			// it's a different weapon
+			else
+			{
+				fBuffer = 0.0;
+				iBuffer = StringToInt(value);
+			}
 			
 			// A price option is set?
 			if(StrEqual(key, "price", false))
@@ -623,8 +645,12 @@ public SMCResult:Config_OnKeyValue(Handle:smc, const String:key[], const String:
 			
 			// The weapon name
 			PushArrayString(hWeaponList, key);
+			// If speed set, store the speed value;)
+			if(fBuffer > 0.0)
+				PushArrayCell(hWeaponList, fBuffer);
 			// How many clips for that weapon?
-			PushArrayCell(hWeaponList, iBuffer);
+			else
+				PushArrayCell(hWeaponList, iBuffer);
 		}
 	}
 	

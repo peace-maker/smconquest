@@ -50,6 +50,7 @@ new Handle:g_hCVPreventWeaponDrop;
 new Handle:g_hCVDropAmmo;
 new Handle:g_hCVPrimaryAmmoAmount;
 new Handle:g_hCVSecondaryAmmoAmount;
+new Handle:g_hCVDisableBuyzones;
 new Handle:g_hCVUseBuymenu;
 new Handle:g_hCVInBuyzone;
 new Handle:g_hCVUseClasses;
@@ -127,7 +128,8 @@ public OnPluginStart()
 	g_hCVDropAmmo = CreateConVar("sm_conquest_dropammo", "1", "Should a dead player drop some ammo depending of his weapon?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_hCVPrimaryAmmoAmount = CreateConVar("sm_conquest_droppedprimaryammo", "10", "How much ammo should a primary ammo pack give?", FCVAR_PLUGIN, true, 0.0);
 	g_hCVSecondaryAmmoAmount = CreateConVar("sm_conquest_droppedsecondaryammo", "10", "How much ammo should a secondary ammo pack give?", FCVAR_PLUGIN, true, 0.0);
-	g_hCVUseBuymenu = CreateConVar("sm_conquest_enablebuymenu", "1", "Use the custom buymenu and disable the default ones?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_hCVDisableBuyzones = CreateConVar("sm_conquest_disablebuyzones", "1", "Disable the buyzones on map to stop the standard buying?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_hCVUseBuymenu = CreateConVar("sm_conquest_enablebuymenu", "1", "Use the custom buymenu?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_hCVInBuyzone = CreateConVar("sm_conquest_inbuyzone", "1", "Only allow buying with the custom menu in buyzones?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_hCVUseClasses = CreateConVar("sm_conquest_enableclasses", "1", "Enable the player class system?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_hCVShowWinOverlays = CreateConVar("sm_conquest_showwinoverlays", "1", "Should we display an overlay with the winning team logo? Don't enable this on runtime - only in config. (downloading)", FCVAR_PLUGIN, true, 0.0, true, 1.0);
@@ -557,6 +559,10 @@ public Action:Event_OnPlayerSpawn(Handle:event, const String:name[], bool:dontBr
 		g_hApplyPlayerClass[client] = INVALID_HANDLE;
 	}
 	
+	// Remove any leftover progressbar, if he just spectated someone :o
+	SetEntPropFloat(client, Prop_Send, "m_flProgressBarStartTime", 0.0);
+	SetEntProp(client, Prop_Send, "m_iProgressBarDuration", 0);
+	
 	// Player class
 	if(GetConVarBool(g_hCVUseClasses))
 	{
@@ -973,24 +979,22 @@ public Hook_OnPostThinkPost(entity)
 	if(GetArraySize(g_hFlags) == 0)
 		return;
 	
-	if(!GetConVarBool(g_hCVUseBuymenu))
+	// Simulate not being in buyzone, but keep the information for our own buymenu
+	new bool:bInBuyZone = GetEntProp(entity, Prop_Send, "m_bInBuyZone") == 1;
+	if(bInBuyZone)
 	{
-		// Simulate not being in buyzone, but keep the information for our own buymenu
-		new bool:bInBuyZone = GetEntProp(entity, Prop_Send, "m_bInBuyZone") == 1;
-		if(bInBuyZone)
-		{
+		if(GetConVarBool(g_hCVDisableBuyzones))
 			SetEntProp(entity, Prop_Send, "m_bInBuyZone", 0);
-		}
+	}
+	
+	if(!g_bPlayerInBuyZone[entity] && bInBuyZone)
+	{
+		g_bPlayerInBuyZone[entity] = true;
 		
-		if(!g_bPlayerInBuyZone[entity] && bInBuyZone)
-		{
-			g_bPlayerInBuyZone[entity] = true;
-			
-		}
-		else if(g_bPlayerInBuyZone[entity] && !bInBuyZone)
-		{
-			g_bPlayerInBuyZone[entity] = false;
-		}
+	}
+	else if(g_bPlayerInBuyZone[entity] && !bInBuyZone)
+	{
+		g_bPlayerInBuyZone[entity] = false;
 	}
 	
 	// show the progressbar for spectating clients either

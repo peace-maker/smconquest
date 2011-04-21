@@ -28,6 +28,10 @@ public Menu_SelectBuyCategory(Handle:menu, MenuAction:action, param1, param2)
 	}
 	if(action == MenuAction_Select)
 	{
+		// Buymenu disabled?
+		if(!GetConVarBool(g_hCVUseBuymenu))
+			return;
+		
 		if(!IsPlayerAlive(param1))
 		{
 			CPrintToChat(param1, "%s%t", PREFIX, "Has to be alive");
@@ -60,6 +64,10 @@ public Menu_BuyItem(Handle:menu, MenuAction:action, param1, param2)
 	}
 	else if(action == MenuAction_Select)
 	{
+		// Buymenu disabled?
+		if(!GetConVarBool(g_hCVUseBuymenu))
+			return;
+		
 		if(!IsPlayerAlive(param1))
 		{
 			CPrintToChat(param1, "%s%t", PREFIX, "Has to be alive");
@@ -172,6 +180,10 @@ public Action:Command_ShowBuyMenu(client, args)
 {
 	// Don't try to show the menu, if the config file is missing/bugged
 	if(g_hBuyCategoryMenu == INVALID_HANDLE)
+		return Plugin_Handled;
+	
+	// Buymenu disabled?
+	if(!GetConVarBool(g_hCVUseBuymenu))
 		return Plugin_Handled;
 	
 	if(client && !IsPlayerAlive(client))

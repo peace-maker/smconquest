@@ -66,6 +66,7 @@ new Handle:g_hCVEnforceTimelimit;
 new Handle:g_hCVFadeOnConquer;
 new Handle:g_hCVShowOnRadar;
 new Handle:g_hCVStripLosers;
+new Handle:g_hCVAmmoLifetime;
 
 // Tag
 new Handle:g_hSVTags; 
@@ -144,6 +145,7 @@ public OnPluginStart()
 	g_hCVFadeOnConquer = CreateConVar("sm_conquest_fadeonconquer", "1", "Fade the screen in the flag color for all players on conquer?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_hCVShowOnRadar = CreateConVar("sm_conquest_showonradar", "1", "Should enemies near an conquered flag appear on the radar of the team controlling the flag?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_hCVStripLosers = CreateConVar("sm_conquest_striplosers", "0", "Strip the losing team to knife on round end?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_hCVAmmoLifetime = CreateConVar("sm_conquest_ammolifetime", "60", "Remove dropped ammo packs after x seconds?", FCVAR_PLUGIN, true, 0.0);
 	
 	g_hSVTags = FindConVar("sv_tags");
 	
@@ -156,6 +158,9 @@ public OnPluginStart()
 	
 	// Classes
 	g_hClasses = CreateArray();
+	
+	// Models
+	g_hModels = CreateArray();
 	
 	// Buymenu
 	g_hBuyItemMenuArray = CreateArray();
@@ -367,6 +372,7 @@ public OnMapStart()
 	g_iGlowSprite = PrecacheModel("sprites/blueglow2.vmt", true);
 	
 	ParseFlagConfig();
+	ParseModelConfig();
 	ParseClassConfig();
 	ParseBuyConfig();
 	
@@ -1213,6 +1219,16 @@ bool:CreateAmmoPack(Float:fOrigin[3], Float:fAngle[3], bool:bPrimaryAmmo)
 		ActivateEntity(iAmmo);
 		
 		SDKHook(iAmmo, SDKHook_StartTouch, Hook_OnStartTouchAmmo);
+		
+		// Remove it after x seconds
+		new Float:fAmmoLifeTime = GetConVarFloat(g_hCVAmmoLifetime);
+		if(fAmmoLifeTime > 0.0)
+		{
+			Format(sTargetName, sizeof(sTargetName), "OnUser1 !self:kill::%f:1", fAmmoLifeTime);
+			SetVariantString(sTargetName);
+			AcceptEntityInput(iAmmo, "AddOutput");
+			AcceptEntityInput(iAmmo, "FireUser1");
+		}
 		return true;
 	}
 	

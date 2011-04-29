@@ -11,8 +11,12 @@
 #define CLASS_TEAM 2
 #define CLASS_LIMIT 3
 #define CLASS_WEAPONSETS 4
+#define CLASS_MODEL 5
 
-#define CLASS_NUMOPTIONS 5
+#define CLASS_NUMOPTIONS 6
+
+#define MODELS_ALIAS 0
+#define MODELS_MDLFILE 1
 
 #define WEAPONSET_NAME 0
 #define WEAPONSET_PRICE 1
@@ -32,13 +36,22 @@ enum ConfigSection
 	State_None = 0,
 	State_Root,
 	State_Class,
-	State_WeaponSet
+	State_WeaponSet,
+	State_Files
 }
 
 // Class config parser stuff
 new ConfigSection:g_ConfigSection = State_None;
 new g_iCurrentClassIndex = -1;
 new g_iCurrentWeaponSetIndex = -1;
+
+// Array holding the models
+new Handle:g_hModels;
+
+// Model config parser
+new ConfigSection:g_ModelConfigSection = State_None;
+new g_iCurrentModelIndex = -1;
+new bool:g_bDontDownloadCurrentModel = false;
 
 new g_iPlayerClass[MAXPLAYERS+2] = {-1, ...};
 new g_iPlayerTempClass[MAXPLAYERS+2] = {-1, ...};
@@ -417,9 +430,23 @@ public Action:Timer_ApplyPlayerClass(Handle:timer, any:userid)
 	// Remove weapons again
 	Client_RemoveAllWeapons(client, "weapon_knife", true);
 	
-	// Give him the weapon
+	// Give him the weapons
 	GivePlayerClassWeapons(client, g_iPlayerClass[client], g_iPlayerWeaponSet[client]);
 	CPrintToChat(client, "%s%t", PREFIX, "Apply class", sClassName, sWeapon);
+	
+	// Set the model, if this class has one assigned
+	new iModel = GetArrayCell(hClass, CLASS_MODEL);
+	if(iModel != -1)
+	{
+		new Handle:hModel = GetArrayCell(g_hModels, iModel);
+		decl String:sModelPath[PLATFORM_MAX_PATH];
+		GetArrayString(hModel, MODELS_MDLFILE, sModelPath, sizeof(sModelPath));
+		if(strlen(sModelPath) > 0)
+		{
+			SetEntityModel(client, sModelPath);
+		}
+	}
+	
 	
 	return Plugin_Stop;
 }
@@ -554,6 +581,7 @@ public SMCResult:Config_OnNewSection(Handle:parser, const String:section[], bool
 			SetArrayCell(hClass, CLASS_DEFAULT, 0);
 			SetArrayCell(hClass, CLASS_TEAM, 0);
 			SetArrayCell(hClass, CLASS_LIMIT, 0);
+			SetArrayCell(hClass, CLASS_MODEL, -1);
 			
 			// Create the weaponset array
 			new Handle:hWeaponSets = CreateArray();
@@ -619,6 +647,41 @@ public SMCResult:Config_OnKeyValue(Handle:smc, const String:key[], const String:
 					SetFailState("Error parsing classes. The limit of \"%s\" has to be greater than 0.", sBuffer);
 				}
 				SetArrayCell(hClass, CLASS_LIMIT, iBuffer);
+			}
+			else if(StrEqual(key, "model", false))
+			{
+				// A model set?
+				if(strlen(value) > 0)
+				{
+					new iModel = -1;
+					// Is there a model configured with this section name?
+					new Handle:hModel;
+					new iSize = GetArraySize(g_hModels);
+					decl String:sBuffer[64];
+					for(new i=0;i<iSize;i++)
+					{
+						hModel = GetArrayCell(g_hModels, i);
+						GetArrayString(hModel, MODELS_ALIAS, sBuffer, sizeof(sBuffer));
+						
+						// This class is going to use this model
+						// Save the array index
+						if(StrEqual(sBuffer, value, false))
+						{
+							iModel = i;
+							break;
+						}
+					}
+					
+					// The model isn't configured?
+					if(iModel == -1)
+					{
+						GetArrayString(hClass, CLASS_NAME, sBuffer, sizeof(sBuffer));
+						SetFailState("Error parsing classes. The model \"%s\" wasn't found for class \"%s\".", value, sBuffer);
+					}
+					
+					// Save the array index.
+					SetArrayCell(hClass, CLASS_MODEL, iModel);
+				}
 			}
 		}
 		case State_WeaponSet:
@@ -733,6 +796,146 @@ public Config_OnParseEnd(Handle:parser, bool:halted, bool:failed) {
 	// One team has a default one
 	if(iDefault[0] == -1 && (iDefault[1] == -1 || iDefault[2] == -1))
 		SetFailState("Error parsing classes. You set a default setting for one team, but no for the other.");
+}
+
+/** 
+ * Model Config Parsing
+ */
+
+ParseModelConfig()
+{
+	// Close old class arrays
+	new iSize = GetArraySize(g_hModels);
+	new Handle:hModel;
+	for(new i=0;i<iSize;i++)
+	{
+		hModel = GetArrayCell(g_hModels, i);
+		CloseHandle(hModel);
+	}
+	ClearArray(g_hModels);
+	
+	new String:sFile[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/smconquest_models.cfg");
+	
+	if(!FileExists(sFile))
+		return;
+	
+	g_ModelConfigSection = State_None;
+	g_bDontDownloadCurrentModel = false;
+	g_iCurrentModelIndex = -1;
+	
+	new Handle:hSMC = SMC_CreateParser();
+	SMC_SetReaders(hSMC, ModelConfig_OnNewSection, ModelConfig_OnKeyValue, ModelConfig_OnEndSection);
+	SMC_SetParseEnd(hSMC, ModelConfig_OnParseEnd);
+	
+	new iLine, iColumn;
+	new SMCError:smcResult = SMC_ParseFile(hSMC, sFile, iLine, iColumn);
+	CloseHandle(hSMC);
+	
+	if(smcResult != SMCError_Okay)
+	{
+		decl String:sError[128];
+		SMC_GetErrorString(smcResult, sError, sizeof(sError));
+		LogError("Error parsing model config: %s on line %d, col %d of %s", sError, iLine, iColumn, sFile);
+		
+		// Clear the halfway parsed classes
+		iSize = GetArraySize(g_hModels);
+		for(new i=0;i<iSize;i++)
+		{
+			hModel = GetArrayCell(g_hModels, i);
+			CloseHandle(hModel);
+		}
+		ClearArray(g_hModels);
+	}
+}
+
+public SMCResult:ModelConfig_OnNewSection(Handle:parser, const String:section[], bool:quotes)
+{
+	switch(g_ModelConfigSection)
+	{
+		// New model file list
+		case State_Root:
+		{
+			new Handle:hModel = CreateArray(ByteCountToCells(PLATFORM_MAX_PATH)); // Duh, that's a large array..
+			
+			// Save the model alias
+			PushArrayString(hModel, section);
+			PushArrayString(hModel, ""); // Dummy mdl path
+			
+			g_iCurrentModelIndex = PushArrayCell(g_hModels, hModel);
+			g_ModelConfigSection = State_Files;
+		}
+		case State_None:
+		{
+			g_ModelConfigSection = State_Root;
+		}
+	}
+	return SMCParse_Continue;
+}
+
+public SMCResult:ModelConfig_OnKeyValue(Handle:smc, const String:key[], const String:value[], bool:key_quotes, bool:value_quotes)
+{
+	if(!key[0])
+		return SMCParse_Continue;
+	
+	new Handle:hModel = GetArrayCell(g_hModels, g_iCurrentModelIndex);
+	
+	if(g_ModelConfigSection == State_Files)
+	{
+		// Some other plugin is already downloading that model or it's a default one?
+		if(StrEqual(key, "no_download", false) && StringToInt(value) == 1)
+		{
+			g_bDontDownloadCurrentModel = true;
+		}
+		// This is a file to download
+		else if(StrEqual(key, "file", false))
+		{
+			// Bad file? User has to fix the file!
+			if(!FileExists(value))
+				return SMCParse_HaltFail;
+			
+			// Have clients download the file
+			if(!g_bDontDownloadCurrentModel)
+				AddFileToDownloadsTable(value);
+			
+			// Save the model path and precache the model
+			if(StrEqual(value[strlen(value)-4], ".mdl", false))
+			{
+				PrecacheModel(value, true);
+				SetArrayString(hModel, MODELS_MDLFILE, value);
+			}
+		}
+	}
+	
+	return SMCParse_Continue;
+}
+
+public SMCResult:ModelConfig_OnEndSection(Handle:parser)
+{
+	// Finished parsing that model
+	if(g_ModelConfigSection == State_Files)
+	{
+		// Check if there's a .mdl file somewhere
+		decl String:sBuffer[PLATFORM_MAX_PATH];
+		new Handle:hModel = GetArrayCell(g_hModels, g_iCurrentModelIndex);
+		GetArrayString(hModel, MODELS_MDLFILE, sBuffer, sizeof(sBuffer));
+		if(strlen(sBuffer) == 0)
+		{
+			GetArrayString(hModel, MODELS_ALIAS, sBuffer, sizeof(sBuffer));
+			SetFailState("Error parsing models. Can't find a .mdl file for model \"%s\".", sBuffer);
+		}
+		
+		g_iCurrentModelIndex = -1;
+		g_bDontDownloadCurrentModel = false;
+		g_ModelConfigSection = State_Root;
+	}
+	
+	return SMCParse_Continue;
+}
+
+public ModelConfig_OnParseEnd(Handle:parser, bool:halted, bool:failed) {
+	if (failed)
+		SetFailState("Error during parse of the models config.");
 }
 
 CloseClassArray(iClass)

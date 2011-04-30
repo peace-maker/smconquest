@@ -195,7 +195,7 @@ public EntOut_OnStartTouch(const String:output[], caller, activator, Float:delay
 
 public EntOut_OnEndTouch(const String:output[], caller, activator, Float:delay)
 {
-	// Ignore dead players
+	// Ignore anything other than players
 	if(activator < 1 || activator > MaxClients)
 	{
 		return;
@@ -225,13 +225,15 @@ public EntOut_OnEndTouch(const String:output[], caller, activator, Float:delay)
 		
 		new iRequiredPlayers = GetArrayCell(hFlag, FLAG_REQPLAYERS);
 		
-		new iTeamCount = GetTeamClientCount(GetClientTeam(activator));
+		new Handle:hPlayers = GetArrayCell(g_hPlayersInZone, iIndex);
+		
+		// Get a random player out of the left over in this area and check how many players are in his team.
+		new iTeamCount = GetTeamClientCount(GetClientTeam(GetArrayCell(hPlayers, 0)));
 		
 		// Enable a team with less players as required to capture that flags
 		if(GetConVarBool(g_hCVHandicap) && iTeamCount < iRequiredPlayers)
 			iRequiredPlayers = iTeamCount;
 		
-		new Handle:hPlayers = GetArrayCell(g_hPlayersInZone, iIndex);
 		new iCurrentPlayers = GetArraySize(hPlayers), iClient;
 		if(iRequiredPlayers <= iCurrentPlayers)
 		{

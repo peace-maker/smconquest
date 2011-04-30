@@ -1221,6 +1221,8 @@ bool:CreateAmmoPack(Float:fOrigin[3], Float:fAngle[3], bool:bPrimaryAmmo)
 		SDKHook(iAmmo, SDKHook_StartTouch, Hook_OnStartTouchAmmo);
 		
 		// Remove it after x seconds
+		// Thanks to FoxMulder for his Snippet
+		// http://forums.alliedmods.net/showthread.php?t=129135
 		new Float:fAmmoLifeTime = GetConVarFloat(g_hCVAmmoLifetime);
 		if(fAmmoLifeTime > 0.0)
 		{

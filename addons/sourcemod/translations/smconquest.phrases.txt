@@ -388,11 +388,11 @@
 	}
 	"Advert !class"
 	{
-		"en"			"Type !class to reopen the classmenu and choose a different class or weapon set."
+		"en"			"Type {default}!class{green} to reopen the classmenu and choose a different class or weapon set."
 	}
 	"Advert !buy"
 	{
-		"en"			"Type !buy to open a special buymenu."
+		"en"			"Type {default}!buy{green} to open a special buymenu."
 	}
 	"Advert !buy in buyzone"
 	{

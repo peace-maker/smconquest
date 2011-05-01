@@ -14,6 +14,7 @@
  * 1.0 (06.04.2011): Initial release
  * 1.1 (20.04.2011): See changelog.txt
  * 1.2 (20.04.2011): Small hotfixes around speed and health class settings and flag adding
+ * 1.3 (01.05.2011): See changelog.txt
  *
  * visit http://www.wcfan.de/
  */
@@ -27,7 +28,7 @@
 #include <smlib>
 #include <loghelper>
 
-#define PLUGIN_VERSION "1.2"
+#define PLUGIN_VERSION "1.3"
 
 #define PREFIX "{olive}SM:Conquest {default}>{green} "
 
@@ -394,7 +395,7 @@ public OnMapStart()
 	
 	// Advertise the commands
 	if(GetConVarBool(g_hCVAdvertiseCommands))
-		CreateTimer(360.0, Timer_OnAdvertCommands, 0, TIMER_FLAG_NO_MAPCHANGE);
+		CreateTimer(300.0, Timer_OnAdvertCommands, 0, TIMER_FLAG_NO_MAPCHANGE);
 }
 
 public OnMapEnd()
@@ -1188,7 +1189,7 @@ public Action:Timer_OnAdvertCommands(Handle:timer, any:data)
 	
 	if(data == 0 && GetConVarBool(g_hCVUseClasses))
 	{
-		CPrintToChatAll("%s%T", PREFIX, "Advert !class");
+		CPrintToChatAll("%s%t", PREFIX, "Advert !class");
 		// Only advert for the !buy command, if it's enabled ofc :)
 		if(GetConVarBool(g_hCVUseBuymenu))
 			data = 1;
@@ -1196,7 +1197,7 @@ public Action:Timer_OnAdvertCommands(Handle:timer, any:data)
 	else if(data == 1 && GetConVarBool(g_hCVUseBuymenu))
 	{
 		if(GetConVarBool(g_hCVInBuyzone))
-			CPrintToChatAll("%s%t%t", PREFIX, "Advert !buy", "Advert !buy in buyzone");
+			CPrintToChatAll("%s%t %t", PREFIX, "Advert !buy", "Advert !buy in buyzone");
 		else
 			CPrintToChatAll("%s%t", PREFIX, "Advert !buy");
 		data = 0;
@@ -1208,7 +1209,7 @@ public Action:Timer_OnAdvertCommands(Handle:timer, any:data)
 	}
 	
 	// Reshow the other advert in 5 minutes
-	CreateTimer(360.0, Timer_OnAdvertCommands, data, TIMER_FLAG_NO_MAPCHANGE);
+	CreateTimer(300.0, Timer_OnAdvertCommands, data, TIMER_FLAG_NO_MAPCHANGE);
 	
 	return Plugin_Stop;
 }

@@ -1,6 +1,6 @@
 SM:Conquest Changelog
 
-http://forums.alliedmods.net/showthread.php?t=154354
+https://forums.alliedmods.net/showthread.php?t=154354
 
 Legend:
 * = New feature
@@ -8,6 +8,17 @@ Legend:
 + = Improved feature
 ! = Fixed bug
 ? = Other stuff
+
+(01.05.2011): Version 1.3
+-----------------------
+01. * Added option to set models per class. See smconquest_models.cfg. Set the "model" key in the class to the section name of the model.
+02. * Added sm_conquest_striplosers to strip the losing team to knife on round end
+03. * Added sm_conquest_ammolifetime to set the time after which ammo packs get removed
+04. * Added sm_conquest_advertisecommands to enable advertising the !class and !buy commands in chat every 5 minutes
+05. + Changed sm_conquest_usebuymenu to only enable the !buy menu and added sm_conquest_disablebuyzones to disable the buyzones seperately
+06. + Switching to the primary weapon now when applying a class
+07. + Added some map configs for maps in the map pack
+08. ! Fixed relying on leaving client index to recalculate the ownership of a flag, when the player leaves the zone
 
 (20.04.2011): Version 1.2
 -----------------------

@@ -67,6 +67,7 @@ new Handle:g_hCVFadeOnConquer;
 new Handle:g_hCVShowOnRadar;
 new Handle:g_hCVStripLosers;
 new Handle:g_hCVAmmoLifetime;
+new Handle:g_hCVAdvertiseCommands;
 
 // Tag
 new Handle:g_hSVTags; 
@@ -146,6 +147,7 @@ public OnPluginStart()
 	g_hCVShowOnRadar = CreateConVar("sm_conquest_showonradar", "1", "Should enemies near an conquered flag appear on the radar of the team controlling the flag?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_hCVStripLosers = CreateConVar("sm_conquest_striplosers", "0", "Strip the losing team to knife on round end?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_hCVAmmoLifetime = CreateConVar("sm_conquest_ammolifetime", "60", "Remove dropped ammo packs after x seconds?", FCVAR_PLUGIN, true, 0.0);
+	g_hCVAdvertiseCommands = CreateConVar("sm_conquest_advertisecommands", "1", "Advertise the !class and !buy commands in chat?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	
 	g_hSVTags = FindConVar("sv_tags");
 	
@@ -389,6 +391,10 @@ public OnMapStart()
 	
 	// Show the flag status
 	CreateTimer(0.5, Timer_OnUpdateStatusPanel, _, TIMER_FLAG_NO_MAPCHANGE|TIMER_REPEAT);
+	
+	// Advertise the commands
+	if(GetConVarBool(g_hCVAdvertiseCommands))
+		CreateTimer(360.0, Timer_OnAdvertCommands, 0, TIMER_FLAG_NO_MAPCHANGE);
 }
 
 public OnMapEnd()
@@ -1172,6 +1178,39 @@ public Action:Timer_CheckTimeLimit(Handle:timer, any:data)
 	}
 	
 	return Plugin_Continue;
+}
+
+// Teach the players the available commands
+public Action:Timer_OnAdvertCommands(Handle:timer, any:data)
+{
+	if(!GetConVarBool(g_hCVAdvertiseCommands))
+		return Plugin_Stop;
+	
+	if(data == 0 && GetConVarBool(g_hCVUseClasses))
+	{
+		CPrintToChatAll("%s%T", PREFIX, "Advert !class");
+		// Only advert for the !buy command, if it's enabled ofc :)
+		if(GetConVarBool(g_hCVUseBuymenu))
+			data = 1;
+	}
+	else if(data == 1 && GetConVarBool(g_hCVUseBuymenu))
+	{
+		if(GetConVarBool(g_hCVInBuyzone))
+			CPrintToChatAll("%s%t%t", PREFIX, "Advert !buy", "Advert !buy in buyzone");
+		else
+			CPrintToChatAll("%s%t", PREFIX, "Advert !buy");
+		data = 0;
+	}
+	// We don't use any of the commands, so stop the timer.
+	else
+	{
+		return Plugin_Stop;
+	}
+	
+	// Reshow the other advert in 5 minutes
+	CreateTimer(360.0, Timer_OnAdvertCommands, data, TIMER_FLAG_NO_MAPCHANGE);
+	
+	return Plugin_Stop;
 }
 
 /**

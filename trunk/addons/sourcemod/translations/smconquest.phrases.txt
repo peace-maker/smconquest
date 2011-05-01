@@ -386,4 +386,16 @@
 	{
 		"en"			"Fade screen shortly when a flag is conquered?"
 	}
+	"Advert !class"
+	{
+		"en"			"Type !class to reopen the classmenu and choose a different class or weapon set."
+	}
+	"Advert !buy"
+	{
+		"en"			"Type !buy to open a special buymenu."
+	}
+	"Advert !buy in buyzone"
+	{
+		"en"			"You have to be in a buyzone."
+	}
 }

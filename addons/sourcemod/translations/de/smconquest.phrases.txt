@@ -1,4 +1,4 @@
-"Phrases"
+﻿"Phrases"
 {
 	"Respawn in x seconds"
 	{
@@ -349,5 +349,17 @@
 	"Fade screen"
 	{
 		"de"			"Färbe den Bildschirm kurz, wenn eine Flagge erobert wird?"
+	}
+	"Advert !class"
+	{
+		"de"			"Schreibe !class, um das Klassenmenü zu öffnen und andere Klassen oder Waffensets auszuwählen."
+	}
+	"Advert !buy"
+	{
+		"de"			"Schreibe !buy, um ein spezielles Kaufmenü zu öffnen."
+	}
+	"Advert !buy in buyzone"
+	{
+		"de"			"Du musst dich in einer Kaufzone befinden."
 	}
 }

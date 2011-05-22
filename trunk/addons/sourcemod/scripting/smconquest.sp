@@ -621,7 +621,7 @@ public Action:Event_OnPlayerDeath(Handle:event, const String:name[], bool:dontBr
 	
 	// TODO: Add option to reset to default weaponset of that class on death/teamchange
 	
-	if(GetConVarBool(g_hCVRespawn))
+	if(GetConVarBool(g_hCVRespawn) && GetClientTeam(client) >= CS_TEAM_T)
 	{
 		new iRespawnTime = GetConVarInt(g_hCVRespawnTime);
 		
@@ -1062,7 +1062,7 @@ public Action:Timer_OnPlayerRespawnTick(Handle:timer, any:hDataPack)
 {
 	new userid = ReadPackCell(hDataPack);
 	new client = GetClientOfUserId(userid);
-	if(g_bRoundEnded || !client || IsPlayerAlive(client))
+	if(g_bRoundEnded || !client || IsPlayerAlive(client) || GetClientTeam(client) <= CS_TEAM_T)
 	{
 		g_hRespawnPlayer[client] = INVALID_HANDLE;
 		return Plugin_Stop;

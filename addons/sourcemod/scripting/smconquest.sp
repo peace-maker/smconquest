@@ -1062,7 +1062,7 @@ public Action:Timer_OnPlayerRespawnTick(Handle:timer, any:hDataPack)
 {
 	new userid = ReadPackCell(hDataPack);
 	new client = GetClientOfUserId(userid);
-	if(g_bRoundEnded || !client || IsPlayerAlive(client) || GetClientTeam(client) <= CS_TEAM_T)
+	if(g_bRoundEnded || !client || IsPlayerAlive(client) || GetClientTeam(client) < CS_TEAM_T)
 	{
 		g_hRespawnPlayer[client] = INVALID_HANDLE;
 		return Plugin_Stop;

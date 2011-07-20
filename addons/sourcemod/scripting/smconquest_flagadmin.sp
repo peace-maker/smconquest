@@ -2,6 +2,7 @@
  * Handles the flag administration including adding and editing flags ingame
  * Part of SM:Conquest
  *
+ * Thread: https://forums.alliedmods.net/showthread.php?t=154354
  * visit http://www.wcfan.de/
  */
 #include <sourcemod>

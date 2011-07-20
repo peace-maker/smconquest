@@ -2,6 +2,7 @@
  * Handles the player classes
  * Part of SM:Conquest
  *
+ * Thread: https://forums.alliedmods.net/showthread.php?t=154354
  * visit http://www.wcfan.de/
  */
 #include <sourcemod>
@@ -12,8 +13,9 @@
 #define CLASS_LIMIT 3
 #define CLASS_WEAPONSETS 4
 #define CLASS_MODEL 5
+#define CLASS_ADMFLAGS 6
 
-#define CLASS_NUMOPTIONS 6
+#define CLASS_NUMOPTIONS 7
 
 #define MODELS_ALIAS 0
 #define MODELS_MDLFILE 1
@@ -21,8 +23,9 @@
 #define WEAPONSET_NAME 0
 #define WEAPONSET_PRICE 1
 #define WEAPONSET_WEAPONLIST 2
+#define WEAPONSET_ADMFLAGS 3
 
-#define WEAPONSET_NUMOPTIONS 3
+#define WEAPONSET_NUMOPTIONS 4
 
 #define GRENADE_HE 0
 #define GRENADE_FLASH 1
@@ -79,6 +82,15 @@ public Menu_SelectClass(Handle:menu, MenuAction:action, param1, param2)
 		
 		new iClass = StringToInt(info);
 		new Handle:hClass = GetArrayCell(g_hClasses, iClass);
+		
+		// This class is only available to players with a certain adminflag
+		new iAdminBits = GetArrayCell(hClass, CLASS_ADMFLAGS);
+		if(iAdminBits > 0 && (GetUserFlagBits(param1) & iAdminBits) == 0)
+		{
+			// Just show the menu again. They shouldn't have been able to select this class anyways!
+			ShowClassMenu(param1);
+			return;
+		}
 		
 		decl String:sClassName[128];
 		GetArrayString(hClass, CLASS_NAME, sClassName, sizeof(sClassName));
@@ -150,6 +162,15 @@ public Menu_SelectWeaponSet(Handle:menu, MenuAction:action, param1, param2)
 		new Handle:hWeapons = GetArrayCell(hWeaponSets, iWeaponSet);
 		GetArrayString(hWeapons, WEAPONSET_NAME, sWeapon, sizeof(sWeapon));
 		
+		// This weaponset is only available to players with a certain adminflag
+		new iAdminBits = GetArrayCell(hWeapons, WEAPONSET_ADMFLAGS);
+		if(iAdminBits > 0 && (GetUserFlagBits(param1) & iAdminBits) == 0)
+		{
+			// Just show the menu again. They shouldn't have been able to select this weaponset anyways!
+			ShowWeaponSetMenu(param1);
+			return;
+		}
+		
 		// Check for the money
 		new iPrice = GetArrayCell(hWeapons, WEAPONSET_PRICE);
 		new iMoney = GetEntData(param1, g_iAccount);
@@ -199,7 +220,7 @@ ShowClassMenu(client)
 	// Allow exiting, if player already has a class
 	SetMenuExitButton(menu, true);
 	
-	new Handle:hClass, iTeam;
+	new Handle:hClass, iTeam, iAdminBits;
 	decl String:sClassIndex[5], String:sClassName[128];
 	for(new i=0;i<iSize;i++)
 	{
@@ -209,6 +230,11 @@ ShowClassMenu(client)
 		// Check if the player is in the correct team
 		iTeam = GetArrayCell(hClass, CLASS_TEAM);
 		if(iTeam > 0 && iTeam != GetClientTeam(client))
+			continue;
+		
+		// This class is only available to players with a certain adminflag
+		iAdminBits = GetArrayCell(hClass, CLASS_ADMFLAGS);
+		if(iAdminBits > 0 && (GetUserFlagBits(client) & iAdminBits) == 0)
 			continue;
 		
 		GetArrayString(hClass, CLASS_NAME, sClassName, sizeof(sClassName));
@@ -259,11 +285,17 @@ ShowWeaponSetMenu(client)
 	SetMenuTitle(menu, "%T", "Select weapon set", client, sClassName);
 	SetMenuExitBackButton(menu, true);
 	
-	new Handle:hWeapons, iPrice;
+	new Handle:hWeapons, iPrice, iAdminBits;
 	decl String:sWeaponIndex[5], String:sWeaponName[128];
 	for(new i=0;i<iSize;i++)
 	{
 		hWeapons = GetArrayCell(hWeaponSets, i);
+		
+		// This weaponset is only available to players with a certain adminflag
+		iAdminBits = GetArrayCell(hWeapons, WEAPONSET_ADMFLAGS);
+		if(iAdminBits > 0 && (GetUserFlagBits(client) & iAdminBits) == 0)
+			continue;
+		
 		GetArrayString(hWeapons, WEAPONSET_NAME, sWeaponName, sizeof(sWeaponName));
 		IntToString(i, sWeaponIndex, sizeof(sWeaponIndex));
 		
@@ -416,16 +448,45 @@ public Action:Timer_ApplyPlayerClass(Handle:timer, any:userid)
 		CPrintToChat(client, "%s%t", PREFIX, "Class introduction");
 	}
 	
+	// We don't want bots to have classes!
+	if(IsFakeClient(client) && !GetConVarBool(g_hCVStripBots))
+	{
+		return Plugin_Stop;
+	}
+	
 	// Get the classname
 	decl String:sClassName[128];
 	new Handle:hClass = GetArrayCell(g_hClasses, g_iPlayerClass[client]);
 	GetArrayString(hClass, CLASS_NAME, sClassName, sizeof(sClassName));
+	
+	// This class is only available to players with a certain adminflag
+	new iAdminBits = GetArrayCell(hClass, CLASS_ADMFLAGS);
+	if(iAdminBits > 0 && (GetUserFlagBits(client) & iAdminBits) == 0)
+	{
+		// He doesn't have access anymore. Set to default class and show menu again.
+		g_iPlayerClass[client] = GetDefaultClass(GetClientTeam(client));
+		g_iPlayerWeaponSet[client] = 0;
+		ShowClassMenu(client);
+		CPrintToChat(client, "%s%t", PREFIX, "Class introduction");
+	}
 	
 	// Get the weaponset name
 	decl String:sWeapon[64];
 	new Handle:hWeaponSets = GetArrayCell(hClass, CLASS_WEAPONSETS);
 	new Handle:hWeapons = GetArrayCell(hWeaponSets, g_iPlayerWeaponSet[client]);
 	GetArrayString(hWeapons, WEAPONSET_NAME, sWeapon, sizeof(sWeapon));
+	
+	// This weaponset is only available to players with a certain adminflag
+	iAdminBits = GetArrayCell(hWeapons, WEAPONSET_ADMFLAGS);
+	if(iAdminBits > 0 && (GetUserFlagBits(client) & iAdminBits) == 0)
+	{
+		// Let him select a new weaponset.
+		g_iPlayerTempClass[client] = g_iPlayerClass[client];
+		g_iPlayerClass[client] = -1;
+		g_iPlayerWeaponSet[client] = -1;
+		ShowWeaponSetMenu(client);
+		return Plugin_Stop;
+	}
 	
 	// Remove weapons again
 	Client_RemoveAllWeapons(client, "weapon_knife", true);
@@ -565,6 +626,9 @@ public SMCResult:Config_OnNewSection(Handle:parser, const String:section[], bool
 			new Handle:hWeaponList = CreateArray(ByteCountToCells(64));
 			SetArrayCell(hWeapons, WEAPONSET_WEAPONLIST, hWeaponList);
 			
+			// Set the default admin_flags
+			SetArrayCell(hWeapons, WEAPONSET_ADMFLAGS, 0);
+			
 			g_iCurrentWeaponSetIndex = PushArrayCell(hWeaponSets, hWeapons);
 			g_ConfigSection = State_WeaponSet;
 		}
@@ -582,6 +646,7 @@ public SMCResult:Config_OnNewSection(Handle:parser, const String:section[], bool
 			SetArrayCell(hClass, CLASS_TEAM, 0);
 			SetArrayCell(hClass, CLASS_LIMIT, 0);
 			SetArrayCell(hClass, CLASS_MODEL, -1);
+			SetArrayCell(hClass, CLASS_ADMFLAGS, 0);
 			
 			// Create the weaponset array
 			new Handle:hWeaponSets = CreateArray();
@@ -683,6 +748,21 @@ public SMCResult:Config_OnKeyValue(Handle:smc, const String:key[], const String:
 					SetArrayCell(hClass, CLASS_MODEL, iModel);
 				}
 			}
+			// This class is restricted to some admins?
+			else if(StrEqual(key, "admin_flags", false))
+			{
+				// http://wiki.alliedmods.net/Adding_Admins_%28SourceMod%29#Levels
+				if(strlen(value) > 0)
+				{
+					// Convert the flags to bits
+					iBuffer = ReadFlagString(value);
+					if(iBuffer > 0)
+					{
+						// Store the ADMFLAG_ bits to restrict access lateron
+						SetArrayCell(hClass, CLASS_ADMFLAGS, iBuffer);
+					}
+				}
+			}
 		}
 		case State_WeaponSet:
 		{
@@ -695,23 +775,19 @@ public SMCResult:Config_OnKeyValue(Handle:smc, const String:key[], const String:
 			if(StrEqual(key, "speed", false))
 			{
 				fBuffer = StringToFloat(value);
-				// Set a bogous value to avoid an exception
-				iBuffer = 1;
 				if(fBuffer <= 0.0)
 				{
 					SetFailState("Error parsing classes. The speed has to be greater than 0.");
 				}
+				
+				// Store the speed value
+				PushArrayString(hWeaponList, key);
+				PushArrayCell(hWeaponList, fBuffer);
 			}
-			// it's a different weapon
-			else
-			{
-				fBuffer = 0.0;
-				iBuffer = StringToInt(value);
-			}
-			
 			// A price option is set?
-			if(StrEqual(key, "price", false))
+			else if(StrEqual(key, "price", false))
 			{
+				iBuffer = StringToInt(value);
 				if(iBuffer < 0)
 				{
 					decl String:sBuffer[64];
@@ -720,20 +796,33 @@ public SMCResult:Config_OnKeyValue(Handle:smc, const String:key[], const String:
 				}
 				SetArrayCell(hWeapons, WEAPONSET_PRICE, iBuffer);
 			}
-			
-			if(iBuffer < 1)
+			else if(StrEqual(key, "admin_flags", false))
 			{
-				SetFailState("Error parsing classes. The ammo of \"%s\" has to be greater than 0.", key);
+				// http://wiki.alliedmods.net/Adding_Admins_%28SourceMod%29#Levels
+				if(strlen(value) > 0)
+				{
+					// Convert the flags to bits
+					iBuffer = ReadFlagString(value);
+					if(iBuffer > 0)
+					{
+						// Store the ADMFLAG_ bits to restrict access lateron
+						SetArrayCell(hWeapons, WEAPONSET_ADMFLAGS, iBuffer);
+					}
+				}
 			}
-			
-			// The weapon name
-			PushArrayString(hWeaponList, key);
-			// If speed set, store the speed value;)
-			if(fBuffer > 0.0)
-				PushArrayCell(hWeaponList, fBuffer);
-			// How many clips for that weapon?
 			else
+			{
+				iBuffer = StringToInt(value);
+				if(iBuffer < 1)
+				{
+					SetFailState("Error parsing classes. The ammo of \"%s\" has to be greater than 0.", key);
+				}
+				
+				// The weapon name
+				PushArrayString(hWeaponList, key);
+				// How many clips for that weapon?
 				PushArrayCell(hWeaponList, iBuffer);
+			}
 		}
 	}
 	
@@ -775,6 +864,10 @@ public Config_OnParseEnd(Handle:parser, bool:halted, bool:failed) {
 		// This class wants to be the default
 		if(GetArrayCell(hClass, CLASS_DEFAULT) == 1)
 		{
+			// The default class can't be restricted to admins
+			if(GetArrayCell(hClass, CLASS_ADMFLAGS) > 0)
+				SetFailState("Error parsing classes. The default class can't be restricted to admins with a certain flag!");
+			
 			// No team set, so global default
 			if(iClassTeam == 0)
 			{
@@ -804,7 +897,7 @@ public Config_OnParseEnd(Handle:parser, bool:halted, bool:failed) {
 
 ParseModelConfig()
 {
-	// Close old class arrays
+	// Close old model arrays
 	new iSize = GetArraySize(g_hModels);
 	new Handle:hModel;
 	for(new i=0;i<iSize;i++)

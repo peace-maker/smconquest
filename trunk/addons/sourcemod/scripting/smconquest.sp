@@ -15,7 +15,9 @@
  * 1.1 (20.04.2011): See changelog.txt
  * 1.2 (20.04.2011): Small hotfixes around speed and health class settings and flag adding
  * 1.3 (01.05.2011): See changelog.txt
+ * 1.3.1 (20.07.2011): See changelog.txt
  *
+ * Thread: https://forums.alliedmods.net/showthread.php?t=154354
  * visit http://www.wcfan.de/
  */
 #pragma semicolon 1
@@ -28,7 +30,7 @@
 #include <smlib>
 #include <loghelper>
 
-#define PLUGIN_VERSION "1.3"
+#define PLUGIN_VERSION "1.3.1"
 
 #define PREFIX "{olive}SM:Conquest {default}>{green} "
 
@@ -69,6 +71,7 @@ new Handle:g_hCVShowOnRadar;
 new Handle:g_hCVStripLosers;
 new Handle:g_hCVAmmoLifetime;
 new Handle:g_hCVAdvertiseCommands;
+new Handle:g_hCVStripBots;
 
 // Tag
 new Handle:g_hSVTags; 
@@ -149,6 +152,7 @@ public OnPluginStart()
 	g_hCVStripLosers = CreateConVar("sm_conquest_striplosers", "0", "Strip the losing team to knife on round end?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_hCVAmmoLifetime = CreateConVar("sm_conquest_ammolifetime", "60", "Remove dropped ammo packs after x seconds?", FCVAR_PLUGIN, true, 0.0);
 	g_hCVAdvertiseCommands = CreateConVar("sm_conquest_advertisecommands", "1", "Advertise the !class and !buy commands in chat?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_hCVStripBots = CreateConVar("sm_conquest_stripbots", "1", "Strip bots to knife and set to default class on spawn?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	
 	g_hSVTags = FindConVar("sv_tags");
 	
@@ -582,7 +586,9 @@ public Action:Event_OnPlayerSpawn(Handle:event, const String:name[], bool:dontBr
 		// Strip weapons
 		if(GetClientTeam(client) >= CS_TEAM_T)
 		{
-			Client_RemoveAllWeapons(client, "weapon_knife", true);
+			// Don't strip the bot, if it's disabled :)
+			if(!IsFakeClient(client) || (IsFakeClient(client) && GetConVarBool(g_hCVStripBots)))
+				Client_RemoveAllWeapons(client, "weapon_knife", true);
 			// Set the class with a delay
 			g_hApplyPlayerClass[client] = CreateTimer(0.5, Timer_ApplyPlayerClass, userid, TIMER_FLAG_NO_MAPCHANGE);
 		}

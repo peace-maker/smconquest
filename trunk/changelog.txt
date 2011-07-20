@@ -9,6 +9,14 @@ Legend:
 ! = Fixed bug
 ? = Other stuff
 
+(20.07.2011): Version 1.3.1
+-----------------------
+01. * Added "admin_flags" key to restrict classes or weaponsets to admins only.
+02. * Added sm_conquest_stripbots convar to toggle class applying and weapon stripping on bots
+03. + Updated dutch translations (Thanks Groger)
+04. ! Fixed restarting the progressbar, when someone leaves the zone
+05. ! Fixed spectators getting weapons when switching to spec right after spawn or pickung up grenades (Thanks Squall)
+
 (01.05.2011): Version 1.3
 -----------------------
 01. * Added option to set models per class. See smconquest_models.cfg. Set the "model" key in the class to the section name of the model.

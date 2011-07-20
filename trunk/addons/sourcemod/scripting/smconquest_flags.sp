@@ -2,6 +2,7 @@
  * Handles the flag actions
  * Part of SM:Conquest
  *
+ * Thread: https://forums.alliedmods.net/showthread.php?t=154354
  * visit http://www.wcfan.de/
  */
 #include <sourcemod> // Just in here for Pawn Studio..
@@ -140,15 +141,6 @@ public EntOut_OnStartTouch(const String:output[], caller, activator, Float:delay
 	// enough players now?
 	else if(iCurrentPlayers == iRequiredPlayers)
 	{
-		// Build a playerlist for the forward
-		new clients[iCurrentPlayers];
-		new iClient;
-		for(new i=0;i<iCurrentPlayers;i++)
-		{
-			iClient = GetArrayCell(hPlayers, i);
-			clients[i] = iClient;
-		}
-		
 		// Start conquer timer
 		new Handle:hConquerTimer = CreateTimer(float(iTime), Timer_OnConquerFlag, iIndex, TIMER_FLAG_NO_MAPCHANGE);
 		SetArrayCell(hFlag, FLAG_CONQUERTIMER, hConquerTimer);
@@ -166,6 +158,7 @@ public EntOut_OnStartTouch(const String:output[], caller, activator, Float:delay
 				EmitSoundToAll(g_sSoundFiles[CSOUND_BLUETEAM_STARTS_CONQUERING], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_LIBRARY);
 		}
 		
+		new iClient;
 		// Show it now to all players, if requires more than 1
 		if(iRequiredPlayers > 1)
 		{
@@ -210,6 +203,7 @@ public EntOut_OnEndTouch(const String:output[], caller, activator, Float:delay)
 	//PrintToChatAll("%d left zone %d", activator, iIndex);
 	//PrintToServer("%d left zone %d", activator, iIndex);
 	
+	// Remove him from the zone. This also stops the conquering if there aren't enough players anymore
 	RemovePlayerFromZone(activator, iIndex);
 	
 	// Check if only one team is in the zone now again
@@ -228,15 +222,19 @@ public EntOut_OnEndTouch(const String:output[], caller, activator, Float:delay)
 		new Handle:hPlayers = GetArrayCell(g_hPlayersInZone, iIndex);
 		
 		// Get a random player out of the left over in this area and check how many players are in his team.
-		new iTeamCount = GetTeamClientCount(GetClientTeam(GetArrayCell(hPlayers, 0)));
+		new iTeamCount = GetTeamClientCount(iOnlyTeam);
 		
 		// Enable a team with less players as required to capture that flags
 		if(GetConVarBool(g_hCVHandicap) && iTeamCount < iRequiredPlayers)
 			iRequiredPlayers = iTeamCount;
 		
 		new iCurrentPlayers = GetArraySize(hPlayers), iClient;
-		if(iRequiredPlayers <= iCurrentPlayers)
+		if(iCurrentPlayers >= iRequiredPlayers)
 		{
+			// Don't restart the timer if this flag is already getting conquered by that team
+			if(GetArrayCell(hFlag, FLAG_CONQUERSTARTTIME) != -1)
+				return;
+			
 			new iTime = GetArrayCell(hFlag, FLAG_TIME);
 			
 			// Start conquer timer

@@ -2,6 +2,7 @@
  * Handles the client cookies
  * Part of SM:Conquest
  *
+ * Thread: https://forums.alliedmods.net/showthread.php?t=154354
  * visit http://www.wcfan.de/
  */
 #include <sourcemod>

@@ -881,8 +881,8 @@ public OnEntityCreated(entity, const String:classname[])
 
 public Action:Hook_OnWeaponDrop(client, weapon)
 {
-	// Don't do anything, if no flags for that map -> "disabled"
-	if(!GetConVarBool(g_hCVPreventWeaponDrop) || GetArraySize(g_hFlags) == 0)
+	// Don't do anything, if no flags for that map -> "disabled" or no weapon dropped
+	if(!GetConVarBool(g_hCVPreventWeaponDrop) || GetArraySize(g_hFlags) == 0 || weapon == -1)
 		return Plugin_Continue;
 	
 	// Primary or secondary weapon? Don't drop.

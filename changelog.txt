@@ -9,7 +9,7 @@ Legend:
 ! = Fixed bug
 ? = Other stuff
 
-(20.07.2011): Version 1.3.1
+(28.07.2011): Version 1.3.1
 -----------------------
 01. * Added "admin_flags" key to restrict classes or weaponsets to admins only.
 02. * Added sm_conquest_stripbots convar to toggle class applying and weapon stripping on bots

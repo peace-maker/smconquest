@@ -15,7 +15,7 @@
  * 1.1 (20.04.2011): See changelog.txt
  * 1.2 (20.04.2011): Small hotfixes around speed and health class settings and flag adding
  * 1.3 (01.05.2011): See changelog.txt
- * 1.3.1 (20.07.2011): See changelog.txt
+ * 1.3.1 (28.07.2011): See changelog.txt
  *
  * Thread: https://forums.alliedmods.net/showthread.php?t=154354
  * visit http://www.wcfan.de/
@@ -440,7 +440,9 @@ public OnConfigsExecuted()
 
 public OnClientPutInServer(client)
 {
+#if SOURCEMOD_V_MAJOR >= 1 && SOURCEMOD_V_MINOR < 4
 	SDKHook(client, SDKHook_WeaponDrop, Hook_OnWeaponDrop);
+#endif
 	SDKHook(client, SDKHook_WeaponSwitch, Hook_OnWeaponSwitch);
 	SDKHook(client, SDKHook_PostThinkPost, Hook_OnPostThinkPost);
 }
@@ -879,7 +881,11 @@ public OnEntityCreated(entity, const String:classname[])
 		AcceptEntityInput(entity, "Kill");
 }
 
+#if SOURCEMOD_V_MAJOR >= 1 && SOURCEMOD_V_MINOR >= 4
+public Action:CS_OnCSWeaponDrop(client, weapon)
+#else
 public Action:Hook_OnWeaponDrop(client, weapon)
+#endif
 {
 	// Don't do anything, if no flags for that map -> "disabled" or no weapon dropped
 	if(!GetConVarBool(g_hCVPreventWeaponDrop) || GetArraySize(g_hFlags) == 0 || weapon == -1)
@@ -895,6 +901,8 @@ public Action:Hook_OnWeaponDrop(client, weapon)
 			AcceptEntityInput(weapon, "Kill");
 			return Plugin_Continue;
 		}
+		
+#if SOURCEMOD_V_MAJOR >= 1 && SOURCEMOD_V_MINOR < 4
 		// Reset the old ammo, since the weapondrop block keeps the weapon, but removes the player ammo.
 		decl String:sWeapon[64];
 		new iPrimaryAmmo, iSecondaryAmmo = -1;
@@ -909,8 +917,10 @@ public Action:Hook_OnWeaponDrop(client, weapon)
 			ResetPack(hDataPack);
 			CreateTimer(0.01, Timer_ReaddAmmo, hDataPack, TIMER_FLAG_NO_MAPCHANGE|TIMER_DATA_HNDL_CLOSE);
 		}
+#endif
 		return Plugin_Handled;
 	}
+
 	// Drop grenades.
 	// Need to do that, since we actually "drop" the grenade, when throwing it.
 	// If we "block" it here, it still get's thrown, but the player don't change to his previous weapon, but stays empty-handed :O
@@ -1132,6 +1142,7 @@ public Action:Timer_OnStartSound(Handle:timer, any:data)
 	return Plugin_Stop;
 }
 
+#if SOURCEMOD_V_MAJOR >= 1 && SOURCEMOD_V_MINOR < 4
 public Action:Timer_ReaddAmmo(Handle:timer, any:data)
 {
 	new client = GetClientOfUserId(ReadPackCell(data));
@@ -1143,6 +1154,7 @@ public Action:Timer_ReaddAmmo(Handle:timer, any:data)
 	
 	return Plugin_Stop;
 }
+#endif
 
 public Action:Timer_OnRemoveWeapons(Handle:timer, any:data)
 {

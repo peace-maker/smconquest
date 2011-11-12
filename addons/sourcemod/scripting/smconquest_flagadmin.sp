@@ -443,7 +443,7 @@ public Menu_SelectFlagOption(Handle:menu, MenuAction:action, param1, param2)
 			ShowFlagOptionMenu(param1, g_iPlayerEditsFlag[param1]);
 		}
 		
-		// Admin wants to rename the flag
+		// Admin wants to change the amount of players required to conquer this flag
 		else if(StrEqual(sInfo, "reqplayers"))
 		{
 			GetArrayString(hFlag, FLAG_NAME, sBuffer, sizeof(sBuffer));
@@ -452,7 +452,7 @@ public Menu_SelectFlagOption(Handle:menu, MenuAction:action, param1, param2)
 			CPrintToChat(param1, "%s%t", PREFIX, "Type players required", sBuffer, iRequiredPlayers);
 		}
 		
-		// Admin wants to rename the flag
+		// Admin wants to change the time in seconds it requires a player to stay near the flag to conquer it
 		else if(StrEqual(sInfo, "time"))
 		{
 			GetArrayString(hFlag, FLAG_NAME, sBuffer, sizeof(sBuffer));
@@ -461,7 +461,7 @@ public Menu_SelectFlagOption(Handle:menu, MenuAction:action, param1, param2)
 			CPrintToChat(param1, "%s%t", PREFIX, "Type conquer time", sBuffer, iTime);
 		}
 		
-		// Rotate the flag
+		// Change the sorting of the flags to adjust the status panel order
 		else if(StrEqual(sInfo, "sort"))
 		{
 			ShowFlagSortMenu(param1);

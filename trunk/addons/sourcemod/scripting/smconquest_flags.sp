@@ -443,79 +443,72 @@ public Action:Timer_OnConquerFlag(Handle:timer, any:iIndex)
 	// A team controls all flags! They won that round!
 	if(iLastTeam > 1)
 	{
-		if(g_hTerminateRound != INVALID_HANDLE)
+		iScore = GetConVarInt(g_hCVTeamScore);
+		if(iLastTeam == CS_TEAM_T)
 		{
-			iScore = GetConVarInt(g_hCVTeamScore);
-			if(iLastTeam == CS_TEAM_T)
+			// End the round with proper reason
+			CS_TerminateRound(5.0, CSRoundEnd_TerroristWin);
+			// Show the screen overlay of the winning team
+			if(GetConVarBool(g_hCVShowWinOverlays))
 			{
-				// End the round with proper reason
-				SDKCall(g_hTerminateRound, 5.0, 8);
-				// Show the screen overlay of the winning team
-				if(GetConVarBool(g_hCVShowWinOverlays))
-				{
-					Client_SetScreenOverlayForAll("conquest/v1/red_wins.vtf");
-				}
-				// Play the winning sound
-				if(strlen(g_sSoundFiles[CSOUND_REDTEAM_WIN]) > 0)
-					EmitSoundToAll(g_sSoundFiles[CSOUND_REDTEAM_WIN], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_TRAIN);
-				
-				// Stop any capturing
-				for(new c=1;c<=MaxClients;c++)
-				{
-					RemovePlayerFromAllZones(c);
-				}
-				
-				// Strip losers to knife
-				if(GetConVarBool(g_hCVStripLosers))
-				{
-					for(new i=1;i<=MaxClients;i++)
-					{
-						if(IsClientInGame(i) && IsPlayerAlive(i) && GetClientTeam(i) == CS_TEAM_CT)
-							Client_RemoveAllWeapons(i, "weapon_knife", true);
-					}
-				}
-				
-				// Give the team their points
-				if(iScore > 0)
-					Team_SetScore(iLastTeam, Team_GetScore(iLastTeam)+iScore);
+				Client_SetScreenOverlayForAll("conquest/v1/red_wins.vtf");
 			}
-			else if(iLastTeam == CS_TEAM_CT)
+			// Play the winning sound
+			if(strlen(g_sSoundFiles[CSOUND_REDTEAM_WIN]) > 0)
+				EmitSoundToAll(g_sSoundFiles[CSOUND_REDTEAM_WIN], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_TRAIN);
+			
+			// Stop any capturing
+			for(new c=1;c<=MaxClients;c++)
 			{
-				// End the round with proper reason
-				SDKCall(g_hTerminateRound, 5.0, 7);
-				// Show the screen overlay of the winning team
-				if(GetConVarBool(g_hCVShowWinOverlays))
-				{
-					Client_SetScreenOverlayForAll("conquest/v1/blue_wins.vtf");
-				}
-				// Play the winning sound
-				if(strlen(g_sSoundFiles[CSOUND_BLUETEAM_WIN]) > 0)
-				EmitSoundToAll(g_sSoundFiles[CSOUND_BLUETEAM_WIN], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_TRAIN);
-				
-				// Stop any capturing
-				for(new c=1;c<=MaxClients;c++)
-				{
-					RemovePlayerFromAllZones(c);
-				}
-				
-				// Strip losers to knife
-				if(GetConVarBool(g_hCVStripLosers))
-				{
-					for(new i=1;i<=MaxClients;i++)
-					{
-						if(IsClientInGame(i) && IsPlayerAlive(i) && GetClientTeam(i) == CS_TEAM_T)
-							Client_RemoveAllWeapons(i, "weapon_knife", true);
-					}
-				}
-				
-				// Give the team their points
-				if(iScore > 0)
-					Team_SetScore(iLastTeam, Team_GetScore(iLastTeam)+iScore);
+				RemovePlayerFromAllZones(c);
 			}
+			
+			// Strip losers to knife
+			if(GetConVarBool(g_hCVStripLosers))
+			{
+				for(new i=1;i<=MaxClients;i++)
+				{
+					if(IsClientInGame(i) && IsPlayerAlive(i) && GetClientTeam(i) == CS_TEAM_CT)
+						Client_RemoveAllWeapons(i, "weapon_knife", true);
+				}
+			}
+			
+			// Give the team their points
+			if(iScore > 0)
+				Team_SetScore(iLastTeam, Team_GetScore(iLastTeam)+iScore);
 		}
-		else
+		else if(iLastTeam == CS_TEAM_CT)
 		{
-			LogError("Can't TerminateRound. Bad signature.");
+			// End the round with proper reason
+			CS_TerminateRound(5.0, CSRoundEnd_CTWin);
+			// Show the screen overlay of the winning team
+			if(GetConVarBool(g_hCVShowWinOverlays))
+			{
+				Client_SetScreenOverlayForAll("conquest/v1/blue_wins.vtf");
+			}
+			// Play the winning sound
+			if(strlen(g_sSoundFiles[CSOUND_BLUETEAM_WIN]) > 0)
+			EmitSoundToAll(g_sSoundFiles[CSOUND_BLUETEAM_WIN], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_TRAIN);
+			
+			// Stop any capturing
+			for(new c=1;c<=MaxClients;c++)
+			{
+				RemovePlayerFromAllZones(c);
+			}
+			
+			// Strip losers to knife
+			if(GetConVarBool(g_hCVStripLosers))
+			{
+				for(new i=1;i<=MaxClients;i++)
+				{
+					if(IsClientInGame(i) && IsPlayerAlive(i) && GetClientTeam(i) == CS_TEAM_T)
+						Client_RemoveAllWeapons(i, "weapon_knife", true);
+				}
+			}
+			
+			// Give the team their points
+			if(iScore > 0)
+				Team_SetScore(iLastTeam, Team_GetScore(iLastTeam)+iScore);
 		}
 	}
 	

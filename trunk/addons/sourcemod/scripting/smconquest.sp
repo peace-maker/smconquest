@@ -41,10 +41,6 @@
 new bool:g_bRoundEnded = false;
 new Handle:g_hStartSound = INVALID_HANDLE;
 
-// SDKCall
-new Handle:g_hGameConfig;
-new Handle:g_hTerminateRound;
-
 // ConVar handles
 new Handle:g_hCVRespawn;
 new Handle:g_hCVRespawnTime;
@@ -183,15 +179,6 @@ public OnPluginStart()
 	{
 		SetFailState("Can't find CCSPlayerResource::m_bPlayerSpotted offset.");
 	}
-	
-	g_hGameConfig = LoadGameConfigFile("conquest.games");
-	
-	// Prepare TerminateRound call
-	StartPrepSDKCall(SDKCall_GameRules);
-	PrepSDKCall_SetFromConf(g_hGameConfig, SDKConf_Signature, "TerminateRound");
-	PrepSDKCall_AddParameter(SDKType_Float, SDKPass_Plain);
-	PrepSDKCall_AddParameter(SDKType_PlainOldData, SDKPass_Plain);
-	g_hTerminateRound = EndPrepSDKCall();
 	
 	// Hook game events
 	HookEvent("round_end", Event_OnRoundEnd);
@@ -440,9 +427,6 @@ public OnConfigsExecuted()
 
 public OnClientPutInServer(client)
 {
-#if SOURCEMOD_V_MAJOR >= 1 && SOURCEMOD_V_MINOR < 4
-	SDKHook(client, SDKHook_WeaponDrop, Hook_OnWeaponDrop);
-#endif
 	SDKHook(client, SDKHook_WeaponSwitch, Hook_OnWeaponSwitch);
 	SDKHook(client, SDKHook_PostThinkPost, Hook_OnPostThinkPost);
 }
@@ -514,6 +498,10 @@ public OnClientDisconnect(client)
 	
 	if(GetConVarBool(g_hCVDropAmmo) && IsClientInGame(client))
 	{
+		// Bad weapon?
+		if(g_iPlayerActiveSlot[client] == -1)
+			return;
+		
 		// Remove weapons and put an ammo box instead
 		// Always drop the ammo on the ground
 		new Float:fOrigin[3];
@@ -526,10 +514,6 @@ public OnClientDisconnect(client)
 		{
 			TR_GetEndPosition(fOrigin);
 		}
-		
-		// Bad weapon?
-		if(g_iPlayerActiveSlot[client] == -1)
-			return;
 		
 		new bool:bPrimaryWeapon = g_iPlayerActiveSlot[client] == CS_SLOT_PRIMARY;
 		
@@ -644,6 +628,10 @@ public Action:Event_OnPlayerDeath(Handle:event, const String:name[], bool:dontBr
 	// Drop ammo box
 	if(GetConVarBool(g_hCVDropAmmo))
 	{
+		// Bad weapon?
+		if(g_iPlayerActiveSlot[client] == -1)
+			return Plugin_Continue;
+		
 		// Remove weapons and put an ammo box instead
 		// Always drop the ammo on the ground
 		new Float:fOrigin[3];
@@ -656,10 +644,6 @@ public Action:Event_OnPlayerDeath(Handle:event, const String:name[], bool:dontBr
 		{
 			TR_GetEndPosition(fOrigin);
 		}
-		
-		// Bad weapon?
-		if(g_iPlayerActiveSlot[client] == -1)
-			return Plugin_Continue;
 		
 		new bool:bPrimaryWeapon = g_iPlayerActiveSlot[client] == CS_SLOT_PRIMARY;
 		
@@ -881,11 +865,7 @@ public OnEntityCreated(entity, const String:classname[])
 		AcceptEntityInput(entity, "Kill");
 }
 
-#if SOURCEMOD_V_MAJOR >= 1 && SOURCEMOD_V_MINOR >= 4
 public Action:CS_OnCSWeaponDrop(client, weapon)
-#else
-public Action:Hook_OnWeaponDrop(client, weapon)
-#endif
 {
 	// Don't do anything, if no flags for that map -> "disabled" or no weapon dropped
 	if(!GetConVarBool(g_hCVPreventWeaponDrop) || GetArraySize(g_hFlags) == 0 || weapon == -1)
@@ -902,22 +882,6 @@ public Action:Hook_OnWeaponDrop(client, weapon)
 			return Plugin_Continue;
 		}
 		
-#if SOURCEMOD_V_MAJOR >= 1 && SOURCEMOD_V_MINOR < 4
-		// Reset the old ammo, since the weapondrop block keeps the weapon, but removes the player ammo.
-		decl String:sWeapon[64];
-		new iPrimaryAmmo, iSecondaryAmmo = -1;
-		GetEdictClassname(weapon, sWeapon, sizeof(sWeapon));
-		Client_GetWeaponPlayerAmmo(client, sWeapon, iPrimaryAmmo, iSecondaryAmmo);
-		if(iPrimaryAmmo != 0)
-		{
-			new Handle:hDataPack = CreateDataPack();
-			WritePackCell(hDataPack, GetClientUserId(client));
-			WritePackCell(hDataPack, weapon);
-			WritePackCell(hDataPack, iPrimaryAmmo);
-			ResetPack(hDataPack);
-			CreateTimer(0.01, Timer_ReaddAmmo, hDataPack, TIMER_FLAG_NO_MAPCHANGE|TIMER_DATA_HNDL_CLOSE);
-		}
-#endif
 		return Plugin_Handled;
 	}
 
@@ -1141,20 +1105,6 @@ public Action:Timer_OnStartSound(Handle:timer, any:data)
 	
 	return Plugin_Stop;
 }
-
-#if SOURCEMOD_V_MAJOR >= 1 && SOURCEMOD_V_MINOR < 4
-public Action:Timer_ReaddAmmo(Handle:timer, any:data)
-{
-	new client = GetClientOfUserId(ReadPackCell(data));
-	if(!client || !IsPlayerAlive(client))
-		return Plugin_Stop;
-	new iWeapon = ReadPackCell(data);
-	new iPrimaryAmmo = ReadPackCell(data);
-	Client_SetWeaponPlayerAmmoEx(client, iWeapon, iPrimaryAmmo);
-	
-	return Plugin_Stop;
-}
-#endif
 
 public Action:Timer_OnRemoveWeapons(Handle:timer, any:data)
 {

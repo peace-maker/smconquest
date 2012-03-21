@@ -1030,7 +1030,7 @@ public Action:Timer_OnShowZones(Handle:timer, any:data)
 			}
 		}
 		
-		TE_SendBeamBox(clients, total, fFirstPoint, fSecondPoint, g_iLaserMaterial, g_iHaloMaterial, 0, 30, 3.0, 5.0, 5.0, 2, 1.0, {255,0,0,255}, 0);
+		Effect_DrawBeamBox(clients, total, fFirstPoint, fSecondPoint, g_iLaserMaterial, g_iHaloMaterial, 0, 30, 3.0, 5.0, 5.0, 2, 1.0, {255,0,0,255}, 0);
 	}
 	
 	return Plugin_Continue;
@@ -1086,7 +1086,7 @@ public Action:Timer_OnShowTempZone(Handle:timer, any:data)
 		TE_SetupGlowSprite(fSecondPoint, g_iGlowSprite, 1.0, 1.0, 100);
 	TE_SendToClient(client);
 	
-	TE_SendBeamBoxToClient(client, fFirstPoint, fSecondPoint, g_iLaserMaterial, g_iHaloMaterial, 0, 30, 1.0, 5.0, 5.0, 1, 1.0, {255,0,0,255}, 0);
+	Effect_DrawBeamBoxToClient(client, fFirstPoint, fSecondPoint, g_iLaserMaterial, g_iHaloMaterial, 0, 30, 1.0, 5.0, 5.0, 1, 1.0, {255,0,0,255}, 0);
 	
 	return Plugin_Continue;
 }
@@ -1366,138 +1366,6 @@ DumpFlagDataToFile()
 	CloseHandle(kv);
 }
 
-/**
- * Sends a boxed beam effect to one player.
- * 
- * Ported from eventscripts vecmath library.
- *
- * @param client		The client to show the box to.
- * @param uppercorner	One upper corner of the box.
- * @param bottomcorner	One bottom corner of the box.
- * @param ModelIndex	Precached model index.
- * @param HaloIndex		Precached model index.
- * @param StartFrame	Initital frame to render.
- * @param FrameRate		Beam frame rate.
- * @param Life			Time duration of the beam.
- * @param Width			Initial beam width.
- * @param EndWidth		Final beam width.
- * @param FadeLength	Beam fade time duration.
- * @param Amplitude		Beam amplitude.
- * @param color			Color array (r, g, b, a).
- * @param Speed			Speed of the beam.
- * @noreturn
- */
-stock TE_SendBeamBoxToClient(client, const Float:uppercorner[3], const Float:bottomcorner[3], ModelIndex, HaloIndex, StartFrame, FrameRate, Float:Life, Float:Width, Float:EndWidth, FadeLength, Float:Amplitude, const Color[4], Speed)
-{
-	new clients[1];
-	clients[0] = client;
-	TE_SendBeamBox(clients, 1, uppercorner, bottomcorner, ModelIndex, HaloIndex, StartFrame, FrameRate, Life, Width, EndWidth, FadeLength, Amplitude, Color, Speed);
-}
-
-/**
- * Sends a boxed beam effect to all players.
- * 
- * Ported from eventscripts vecmath library.
- *
- * @param uppercorner	One upper corner of the box.
- * @param bottomcorner	One bottom corner of the box.
- * @param ModelIndex	Precached model index.
- * @param HaloIndex		Precached model index.
- * @param StartFrame	Initital frame to render.
- * @param FrameRate		Beam frame rate.
- * @param Life			Time duration of the beam.
- * @param Width			Initial beam width.
- * @param EndWidth		Final beam width.
- * @param FadeLength	Beam fade time duration.
- * @param Amplitude		Beam amplitude.
- * @param color			Color array (r, g, b, a).
- * @param Speed			Speed of the beam.
- * @noreturn
- */
-stock TE_SendBeamBoxToAll(const Float:uppercorner[3], const Float:bottomcorner[3], ModelIndex, HaloIndex, StartFrame, FrameRate, Float:Life, Float:Width, Float:EndWidth, FadeLength, Float:Amplitude, const Color[4], Speed)
-{
-	new total = 0;
-	new clients[MaxClients];
-	for (new i=1; i<=MaxClients; i++)
-	{
-		if (IsClientInGame(i))
-		{
-			clients[total++] = i;
-		}
-	}
-	TE_SendBeamBox(clients, total, uppercorner, bottomcorner, ModelIndex, HaloIndex, StartFrame, FrameRate, Life, Width, EndWidth, FadeLength, Amplitude, Color, Speed);
-}
-
-/**
- * Sends a boxed beam effect to a list of players.
- * 
- * Ported from eventscripts vecmath library.
- *
- * @param clients		An array of clients to show the box to.
- * @param numClients	Number of players in the array.
- * @param uppercorner	One upper corner of the box.
- * @param bottomcorner	One bottom corner of the box.
- * @param ModelIndex	Precached model index.
- * @param HaloIndex		Precached model index.
- * @param StartFrame	Initital frame to render.
- * @param FrameRate		Beam frame rate.
- * @param Life			Time duration of the beam.
- * @param Width			Initial beam width.
- * @param EndWidth		Final beam width.
- * @param FadeLength	Beam fade time duration.
- * @param Amplitude		Beam amplitude.
- * @param color			Color array (r, g, b, a).
- * @param Speed			Speed of the beam.
- * @noreturn
- */
-stock TE_SendBeamBox(clients[], numClients, const Float:uppercorner[3], const Float:bottomcorner[3], ModelIndex, HaloIndex, StartFrame, FrameRate, Float:Life, Float:Width, Float:EndWidth, FadeLength, Float:Amplitude, const Color[4], Speed)
-{
-	// Create the additional corners of the box
-	new Float:tc1[3];
-	AddVectors(tc1, uppercorner, tc1);
-	tc1[0] = bottomcorner[0];
-	new Float:tc2[3];
-	AddVectors(tc2, uppercorner, tc2);
-	tc2[1] = bottomcorner[1];
-	new Float:tc3[3];
-	AddVectors(tc3, uppercorner, tc3);
-	tc3[2] = bottomcorner[2];
-	new Float:tc4[3];
-	AddVectors(tc4, bottomcorner, tc4);
-	tc4[0] = uppercorner[0];
-	new Float:tc5[3];
-	AddVectors(tc5, bottomcorner, tc5);
-	tc5[1] = uppercorner[1];
-	new Float:tc6[3];
-	AddVectors(tc6, bottomcorner, tc6);
-	tc6[2] = uppercorner[2];
-	
-	// Draw all the edges
-	TE_SetupBeamPoints(uppercorner, tc1, ModelIndex, HaloIndex, StartFrame, FrameRate, Life, Width, EndWidth, FadeLength, Amplitude, Color, Speed);
-	TE_Send(clients, numClients);
-	TE_SetupBeamPoints(uppercorner, tc2, ModelIndex, HaloIndex, StartFrame, FrameRate, Life, Width, EndWidth, FadeLength, Amplitude, Color, Speed);
-	TE_Send(clients, numClients);
-	TE_SetupBeamPoints(uppercorner, tc3, ModelIndex, HaloIndex, StartFrame, FrameRate, Life, Width, EndWidth, FadeLength, Amplitude, Color, Speed);
-	TE_Send(clients, numClients);
-	TE_SetupBeamPoints(tc6, tc1, ModelIndex, HaloIndex, StartFrame, FrameRate, Life, Width, EndWidth, FadeLength, Amplitude, Color, Speed);
-	TE_Send(clients, numClients);
-	TE_SetupBeamPoints(tc6, tc2, ModelIndex, HaloIndex, StartFrame, FrameRate, Life, Width, EndWidth, FadeLength, Amplitude, Color, Speed);
-	TE_Send(clients, numClients);
-	TE_SetupBeamPoints(tc6, bottomcorner, ModelIndex, HaloIndex, StartFrame, FrameRate, Life, Width, EndWidth, FadeLength, Amplitude, Color, Speed);
-	TE_Send(clients, numClients);
-	TE_SetupBeamPoints(tc4, bottomcorner, ModelIndex, HaloIndex, StartFrame, FrameRate, Life, Width, EndWidth, FadeLength, Amplitude, Color, Speed);
-	TE_Send(clients, numClients);
-	TE_SetupBeamPoints(tc5, bottomcorner, ModelIndex, HaloIndex, StartFrame, FrameRate, Life, Width, EndWidth, FadeLength, Amplitude, Color, Speed);
-	TE_Send(clients, numClients);
-	TE_SetupBeamPoints(tc5, tc1, ModelIndex, HaloIndex, StartFrame, FrameRate, Life, Width, EndWidth, FadeLength, Amplitude, Color, Speed);
-	TE_Send(clients, numClients);
-	TE_SetupBeamPoints(tc5, tc3, ModelIndex, HaloIndex, StartFrame, FrameRate, Life, Width, EndWidth, FadeLength, Amplitude, Color, Speed);
-	TE_Send(clients, numClients);
-	TE_SetupBeamPoints(tc4, tc3, ModelIndex, HaloIndex, StartFrame, FrameRate, Life, Width, EndWidth, FadeLength, Amplitude, Color, Speed);
-	TE_Send(clients, numClients);
-	TE_SetupBeamPoints(tc4, tc2, ModelIndex, HaloIndex, StartFrame, FrameRate, Life, Width, EndWidth, FadeLength, Amplitude, Color, Speed);
-	TE_Send(clients, numClients);
-}
 
 stock ClearVector(Float:vec[3])
 {

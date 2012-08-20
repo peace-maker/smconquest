@@ -37,6 +37,7 @@ new g_iRedHudMsg[4] = {206, 24, 25, 200};
 new g_iBlueHudMsg[4] = {25, 128, 194, 200};
 
 new g_iPlayerSpottedOffset = -1;
+new g_iSpottedOffset = -1;
 
 /**
  * Entity Output Handlers
@@ -636,6 +637,51 @@ public Hook_OnPlayerManagerThinkPost(entity)
 			{
 				// Show him
 				SetEntData(entity, g_iPlayerSpottedOffset+iClient, 1, 4, true);
+			}
+		}
+	}
+}
+
+// Show enemies on radar, if they're near to a flag controlled by the player's team
+// CSGO!
+public Hook_OnThinkPost(client)
+{
+	// Don't do anything, if no flags for that map -> "disabled"
+	if(GetArraySize(g_hFlags) == 0)
+		return;
+	
+	// Show enemies on radar, if they're near to a flag controlled by the player's team
+	if(g_bIsCSGO && GetConVarBool(g_hCVShowOnRadar))
+	{
+		// Loop through all flags and check for enemies near own flag
+		new Handle:hFlag, Handle:hPlayers;
+		new iTeam, iNumPlayers, iSize;
+		for(new f=0;f<iSize;f++)
+		{
+			hFlag = GetArrayCell(g_hFlags, f);
+			iTeam = GetArrayCell(hFlag, FLAG_CURRENTTEAM);
+			
+			// Skip this flag, if no team controls it.
+			if(iTeam == 0)
+				continue;
+			
+			// This client's team controls the flag.
+			if(iTeam == GetClientTeam(client))
+				continue;
+			
+			hPlayers = GetArrayCell(g_hPlayersInZone, f);
+			iNumPlayers = GetArraySize(hPlayers);
+			
+			// Is this player near a flag?
+			for(new i=0;i<iNumPlayers;i++)
+			{
+				// He is!
+				if(GetArrayCell(hPlayers, i) == client)
+				{
+					// Show him
+					SetEntData(client, g_iSpottedOffset, 1, 4, true);
+					return;
+				}
 			}
 		}
 	}

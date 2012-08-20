@@ -89,6 +89,8 @@ new Handle:g_hRemoveWeapons = INVALID_HANDLE;
 // CCSPlayer::m_iAccount offset
 new g_iAccount = -1;
 
+new bool:g_bIsCSGO = false;
+
 // Store the sound files configured in smconquest_sounds.cfg
 #define CSOUND_REDFLAG_CAPTURED 0
 #define CSOUND_BLUEFLAG_CAPTURED 1
@@ -168,16 +170,30 @@ public OnPluginStart()
 	// Buymenu
 	g_hBuyItemMenuArray = CreateArray();
 	
+	// Are we running on csgo?
+	g_bIsCSGO = GuessSDKVersion() == SOURCE_SDK_CSGO;
+	
 	g_iAccount = FindSendPropOffs("CCSPlayer", "m_iAccount");
 	if(g_iAccount == -1)
 	{
 		SetFailState("Can't find CCSPlayer::m_iAccount offset.");
 	}
 	
-	g_iPlayerSpottedOffset = FindSendPropOffs("CCSPlayerResource", "m_bPlayerSpotted");
-	if(g_iPlayerSpottedOffset == -1)
+	if(g_bIsCSGO)
 	{
-		SetFailState("Can't find CCSPlayerResource::m_bPlayerSpotted offset.");
+		g_iSpottedOffset = FindSendPropOffs("CCSPlayer", "m_bSpotted");
+		if(g_iSpottedOffset == -1)
+		{
+			SetFailState("Can't find CCSPlayer::m_bSpotted offset.");
+		}
+	}
+	else
+	{
+		g_iPlayerSpottedOffset = FindSendPropOffs("CCSPlayerResource", "m_bPlayerSpotted");
+		if(g_iPlayerSpottedOffset == -1)
+		{
+			SetFailState("Can't find CCSPlayerResource::m_bPlayerSpotted offset.");
+		}
 	}
 	
 	// Hook game events
@@ -373,8 +389,11 @@ public OnMapStart()
 	MyAddServerTag("conquest");
 	
 	// Hook the player_manager, to show people on radar
-	new iPlayerManager = FindEntityByClassname(0, "cs_player_manager");
-	SDKHook(iPlayerManager, SDKHook_ThinkPost, Hook_OnPlayerManagerThinkPost);
+	if(!g_bIsCSGO)
+	{
+		new iPlayerManager = FindEntityByClassname(0, "cs_player_manager");
+		SDKHook(iPlayerManager, SDKHook_ThinkPost, Hook_OnPlayerManagerThinkPost);
+	}
 	
 	// Enforce the timelimit
 	g_iMapStartTime = GetTime();
@@ -429,6 +448,8 @@ public OnClientPutInServer(client)
 {
 	SDKHook(client, SDKHook_WeaponSwitch, Hook_OnWeaponSwitch);
 	SDKHook(client, SDKHook_PostThinkPost, Hook_OnPostThinkPost);
+	if(g_bIsCSGO)
+		SDKHook(client, SDKHook_ThinkPost, Hook_OnThinkPost);
 }
 
 public OnClientDisconnect(client)

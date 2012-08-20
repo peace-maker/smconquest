@@ -91,6 +91,9 @@ new g_iAccount = -1;
 
 new bool:g_bIsCSGO = false;
 
+new Handle:g_hIgnoreRoundWinCond = INVALID_HANDLE;
+new g_iOldIgnoreRoundWinCond;
+
 // Store the sound files configured in smconquest_sounds.cfg
 #define CSOUND_REDFLAG_CAPTURED 0
 #define CSOUND_BLUEFLAG_CAPTURED 1
@@ -224,6 +227,10 @@ public OnPluginStart()
 	HookConVarChange(hTimeLimit, ConVar_TimeLimitChanged);
 	g_iTimeLimit = GetConVarInt(hTimeLimit)*60;
 	
+	g_hIgnoreRoundWinCond = FindConVar("mp_ignore_round_win_conditions");
+	if(g_hIgnoreRoundWinCond != INVALID_HANDLE)
+		g_iOldIgnoreRoundWinCond = GetConVarInt(g_hIgnoreRoundWinCond);
+	
 	AutoExecConfig(true, "plugin.smconquest");
 	
 	for(new i=1;i<=MaxClients;i++)
@@ -236,6 +243,8 @@ public OnPluginStart()
 public OnPluginEnd()
 {
 	MyRemoveServerTag("conquest");
+	if(g_hIgnoreRoundWinCond != INVALID_HANDLE)
+		SetConVarInt(g_hIgnoreRoundWinCond, g_iOldIgnoreRoundWinCond);
 }
 
 // Check if we are lateloaded (not with serverstart)
@@ -440,8 +449,11 @@ public OnMapEnd()
 public OnConfigsExecuted()
 {
 	ServerCommand("sv_hudhint_sound 0");
-	ServerCommand("mp_ignore_round_win_conditions 1");
-	ServerCommand("mp_buytime 99999");
+	
+	if(g_hIgnoreRoundWinCond != INVALID_HANDLE)
+		SetConVarInt(g_hIgnoreRoundWinCond, 1);
+	if(GetConVarBool(g_hCVInBuyzone))
+		ServerCommand("mp_buytime 99999");
 }
 
 public OnClientPutInServer(client)

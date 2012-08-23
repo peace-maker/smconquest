@@ -278,7 +278,7 @@ public OnMapStart()
 	AddFileToDownloadsTable("materials/models/conquest/flagv2/t_flag.vtf");
 	
 	// Winning overlays
-	if(GetConVarBool(g_hCVShowWinOverlays))
+	if(!g_bIsCSGO && GetConVarBool(g_hCVShowWinOverlays))
 	{
 		AddFileToDownloadsTable("materials/conquest/v1/blue_wins.vmt");
 		AddFileToDownloadsTable("materials/conquest/v1/blue_wins.vtf");
@@ -376,19 +376,27 @@ public OnMapStart()
 	PrecacheSound("radio/terwin.wav", false);
 	
 	PrecacheModel("models/conquest/flagv2/flag.mdl", true);
-	if(GetConVarBool(g_hCVShowWinOverlays))
+	if(!g_bIsCSGO && GetConVarBool(g_hCVShowWinOverlays))
 	{
 		PrecacheDecal("conquest/v1/blue_wins.vmt", true);
 		PrecacheDecal("conquest/v1/red_wins.vmt", true);
 	}
 	
-	PrecacheModel(PRIMARYAMMO_MODEL, true);
-	PrecacheModel(SECONDARYAMMO_MODEL, true);
-	PrecacheSound(AMMO_SOUND, true);
-	
-	g_iLaserMaterial = PrecacheModel("materials/sprites/laser.vmt", true);
-	g_iHaloMaterial = PrecacheModel("materials/sprites/halo01.vmt", true);
-	g_iGlowSprite = PrecacheModel("sprites/blueglow2.vmt", true);
+	if(g_bIsCSGO)
+	{
+		g_iLaserMaterial = PrecacheModel("materials/sprites/laserbeam.vmt", true);
+		g_iHaloMaterial = PrecacheModel("materials/sprites/glow01.vmt", true);
+		g_iGlowSprite = PrecacheModel("materials/sprites/blueflare1.vmt", true);
+	}
+	else
+	{
+		g_iLaserMaterial = PrecacheModel("materials/sprites/laser.vmt", true);
+		g_iHaloMaterial = PrecacheModel("materials/sprites/halo01.vmt", true);
+		g_iGlowSprite = PrecacheModel("sprites/blueglow2.vmt", true);
+		PrecacheModel(PRIMARYAMMO_MODEL, true);
+		PrecacheModel(SECONDARYAMMO_MODEL, true);
+		PrecacheSound(AMMO_SOUND, true);
+	}
 	
 	ParseFlagConfig();
 	ParseModelConfig();
@@ -448,10 +456,13 @@ public OnMapEnd()
 
 public OnConfigsExecuted()
 {
-	ServerCommand("sv_hudhint_sound 0");
+	// Don't have that annoying swish sound twice a second.
+	if(!g_bIsCSGO)
+		ServerCommand("sv_hudhint_sound 0");
 	
 	if(g_hIgnoreRoundWinCond != INVALID_HANDLE)
 		SetConVarInt(g_hIgnoreRoundWinCond, 1);
+	// TODO Clean this up!
 	if(GetConVarBool(g_hCVInBuyzone))
 		ServerCommand("mp_buytime 99999");
 }
@@ -529,7 +540,7 @@ public OnClientDisconnect(client)
 	
 	ResetCookieCache(client);
 	
-	if(GetConVarBool(g_hCVDropAmmo) && IsClientInGame(client))
+	if(!g_bIsCSGO && GetConVarBool(g_hCVDropAmmo) && IsClientInGame(client))
 	{
 		// Bad weapon?
 		if(g_iPlayerActiveSlot[client] == -1)
@@ -659,7 +670,7 @@ public Action:Event_OnPlayerDeath(Handle:event, const String:name[], bool:dontBr
 	}
 	
 	// Drop ammo box
-	if(GetConVarBool(g_hCVDropAmmo))
+	if(!g_bIsCSGO && GetConVarBool(g_hCVDropAmmo))
 	{
 		// Bad weapon?
 		if(g_iPlayerActiveSlot[client] == -1)
@@ -821,7 +832,7 @@ public Action:Event_OnRoundStart(Handle:event, const String:name[], bool:dontBro
 	}
 	
 	// Clear the overlay
-	if(GetConVarBool(g_hCVShowWinOverlays))
+	if(!g_bIsCSGO && GetConVarBool(g_hCVShowWinOverlays))
 	{
 		Client_SetScreenOverlayForAll("");
 	}

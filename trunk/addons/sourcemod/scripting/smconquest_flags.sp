@@ -450,7 +450,7 @@ public Action:Timer_OnConquerFlag(Handle:timer, any:iIndex)
 			// End the round with proper reason
 			CS_TerminateRound(5.0, CSRoundEnd_TerroristWin);
 			// Show the screen overlay of the winning team
-			if(GetConVarBool(g_hCVShowWinOverlays))
+			if(!g_bIsCSGO && GetConVarBool(g_hCVShowWinOverlays))
 			{
 				Client_SetScreenOverlayForAll("conquest/v1/red_wins.vtf");
 			}
@@ -476,14 +476,19 @@ public Action:Timer_OnConquerFlag(Handle:timer, any:iIndex)
 			
 			// Give the team their points
 			if(iScore > 0)
-				Team_SetScore(iLastTeam, Team_GetScore(iLastTeam)+iScore);
+			{
+				if(g_bIsCSGO)
+					SetTeamScore(iLastTeam, GetTeamScore(iLastTeam)+iScore);
+				else
+					Team_SetScore(iLastTeam, Team_GetScore(iLastTeam)+iScore);
+			}
 		}
 		else if(iLastTeam == CS_TEAM_CT)
 		{
 			// End the round with proper reason
 			CS_TerminateRound(5.0, CSRoundEnd_CTWin);
 			// Show the screen overlay of the winning team
-			if(GetConVarBool(g_hCVShowWinOverlays))
+			if(!g_bIsCSGO && GetConVarBool(g_hCVShowWinOverlays))
 			{
 				Client_SetScreenOverlayForAll("conquest/v1/blue_wins.vtf");
 			}
@@ -509,7 +514,12 @@ public Action:Timer_OnConquerFlag(Handle:timer, any:iIndex)
 			
 			// Give the team their points
 			if(iScore > 0)
-				Team_SetScore(iLastTeam, Team_GetScore(iLastTeam)+iScore);
+			{
+				if(g_bIsCSGO)
+					SetTeamScore(iLastTeam, GetTeamScore(iLastTeam)+iScore);
+				else
+					Team_SetScore(iLastTeam, Team_GetScore(iLastTeam)+iScore);
+			}
 		}
 	}
 	

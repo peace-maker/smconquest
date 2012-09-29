@@ -277,6 +277,25 @@ public OnMapStart()
 	AddFileToDownloadsTable("materials/models/conquest/flagv2/t_flag.vmt");
 	AddFileToDownloadsTable("materials/models/conquest/flagv2/t_flag.vtf");
 	
+	if(g_bIsCSGO)
+	{
+		// Ammo boxes
+		AddFileToDownloadsTable("models/items/boxmrounds.dx90.vtx");
+		AddFileToDownloadsTable("models/items/boxmrounds.mdl");
+		AddFileToDownloadsTable("models/items/boxmrounds.phy");
+		AddFileToDownloadsTable("models/items/boxmrounds.vvd");
+		AddFileToDownloadsTable("models/items/boxsrounds.dx90.vtx");
+		AddFileToDownloadsTable("models/items/boxsrounds.mdl");
+		AddFileToDownloadsTable("models/items/boxsrounds.phy");
+		AddFileToDownloadsTable("models/items/boxsrounds.vvd");
+		
+		AddFileToDownloadsTable("materials/models/items/BoxMRounds.vtf");
+		AddFileToDownloadsTable("materials/models/items/BoxMRounds_normal.vtf");
+		AddFileToDownloadsTable("materials/models/items/BoxMRounds.vmt");
+		AddFileToDownloadsTable("materials/models/items/BoxSRounds.vtf");
+		AddFileToDownloadsTable("materials/models/items/BoxSRounds.vmt");
+	}
+	
 	// Winning overlays
 	if(!g_bIsCSGO && GetConVarBool(g_hCVShowWinOverlays))
 	{
@@ -393,10 +412,11 @@ public OnMapStart()
 		g_iLaserMaterial = PrecacheModel("materials/sprites/laser.vmt", true);
 		g_iHaloMaterial = PrecacheModel("materials/sprites/halo01.vmt", true);
 		g_iGlowSprite = PrecacheModel("sprites/blueglow2.vmt", true);
-		PrecacheModel(PRIMARYAMMO_MODEL, true);
-		PrecacheModel(SECONDARYAMMO_MODEL, true);
-		PrecacheSound(AMMO_SOUND, true);
 	}
+	
+	PrecacheModel(PRIMARYAMMO_MODEL, true);
+	PrecacheModel(SECONDARYAMMO_MODEL, true);
+	PrecacheSound(AMMO_SOUND, true);
 	
 	ParseFlagConfig();
 	ParseModelConfig();
@@ -540,7 +560,7 @@ public OnClientDisconnect(client)
 	
 	ResetCookieCache(client);
 	
-	if(!g_bIsCSGO && GetConVarBool(g_hCVDropAmmo) && IsClientInGame(client))
+	if(GetConVarBool(g_hCVDropAmmo) && IsClientInGame(client))
 	{
 		// Bad weapon?
 		if(g_iPlayerActiveSlot[client] == -1)
@@ -670,7 +690,7 @@ public Action:Event_OnPlayerDeath(Handle:event, const String:name[], bool:dontBr
 	}
 	
 	// Drop ammo box
-	if(!g_bIsCSGO && GetConVarBool(g_hCVDropAmmo))
+	if(GetConVarBool(g_hCVDropAmmo))
 	{
 		// Bad weapon?
 		if(g_iPlayerActiveSlot[client] == -1)

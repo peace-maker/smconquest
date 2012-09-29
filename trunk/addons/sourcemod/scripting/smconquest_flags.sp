@@ -151,12 +151,12 @@ public EntOut_OnStartTouch(const String:output[], caller, activator, Float:delay
 		if(iTeam == CS_TEAM_T)
 		{
 			if(strlen(g_sSoundFiles[CSOUND_REDTEAM_STARTS_CONQUERING]) > 0)
-				EmitSoundToAll(g_sSoundFiles[CSOUND_REDTEAM_STARTS_CONQUERING], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_LIBRARY);
+				MyEmitSoundToAll(g_sSoundFiles[CSOUND_REDTEAM_STARTS_CONQUERING], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_LIBRARY);
 		}
 		else if(iTeam == CS_TEAM_CT)
 		{
 			if(strlen(g_sSoundFiles[CSOUND_BLUETEAM_STARTS_CONQUERING]) > 0)
-				EmitSoundToAll(g_sSoundFiles[CSOUND_BLUETEAM_STARTS_CONQUERING], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_LIBRARY);
+				MyEmitSoundToAll(g_sSoundFiles[CSOUND_BLUETEAM_STARTS_CONQUERING], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_LIBRARY);
 		}
 		
 		new iClient;
@@ -247,12 +247,12 @@ public EntOut_OnEndTouch(const String:output[], caller, activator, Float:delay)
 			if(iOnlyTeam == CS_TEAM_T)
 			{
 				if(strlen(g_sSoundFiles[CSOUND_REDTEAM_STARTS_CONQUERING]) > 0)
-					EmitSoundToAll(g_sSoundFiles[CSOUND_REDTEAM_STARTS_CONQUERING], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_LIBRARY);
+					MyEmitSoundToAll(g_sSoundFiles[CSOUND_REDTEAM_STARTS_CONQUERING], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_LIBRARY);
 			}
 			else if(iOnlyTeam == CS_TEAM_CT)
 			{
 				if(strlen(g_sSoundFiles[CSOUND_BLUETEAM_STARTS_CONQUERING]) > 0)
-					EmitSoundToAll(g_sSoundFiles[CSOUND_BLUETEAM_STARTS_CONQUERING], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_LIBRARY);
+					MyEmitSoundToAll(g_sSoundFiles[CSOUND_BLUETEAM_STARTS_CONQUERING], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_LIBRARY);
 			}
 			
 			// Show it now to all players
@@ -318,14 +318,14 @@ public Action:Timer_OnConquerFlag(Handle:timer, any:iIndex)
 	{
 		DispatchKeyValue(iFlag, "skin", "1");
 		if(strlen(g_sSoundFiles[CSOUND_REDFLAG_CAPTURED]) > 0)
-			EmitSoundToAll(g_sSoundFiles[CSOUND_REDFLAG_CAPTURED], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_TRAIN);
+			MyEmitSoundToAll(g_sSoundFiles[CSOUND_REDFLAG_CAPTURED], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_TRAIN);
 		GetArrayString(hFlag, FLAG_LOGICTRIGGERT, sBuffer, sizeof(sBuffer));
 	}
 	else if(iTeam == CS_TEAM_CT)
 	{
 		DispatchKeyValue(iFlag, "skin", "2");
 		if(strlen(g_sSoundFiles[CSOUND_BLUEFLAG_CAPTURED]) > 0)
-			EmitSoundToAll(g_sSoundFiles[CSOUND_BLUEFLAG_CAPTURED], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_TRAIN);
+			MyEmitSoundToAll(g_sSoundFiles[CSOUND_BLUEFLAG_CAPTURED], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_TRAIN);
 		GetArrayString(hFlag, FLAG_LOGICTRIGGERCT, sBuffer, sizeof(sBuffer));
 	}
 	else
@@ -456,7 +456,7 @@ public Action:Timer_OnConquerFlag(Handle:timer, any:iIndex)
 			}
 			// Play the winning sound
 			if(strlen(g_sSoundFiles[CSOUND_REDTEAM_WIN]) > 0)
-				EmitSoundToAll(g_sSoundFiles[CSOUND_REDTEAM_WIN], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_TRAIN);
+				MyEmitSoundToAll(g_sSoundFiles[CSOUND_REDTEAM_WIN], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_TRAIN);
 			
 			// Stop any capturing
 			for(new c=1;c<=MaxClients;c++)
@@ -494,7 +494,7 @@ public Action:Timer_OnConquerFlag(Handle:timer, any:iIndex)
 			}
 			// Play the winning sound
 			if(strlen(g_sSoundFiles[CSOUND_BLUETEAM_WIN]) > 0)
-			EmitSoundToAll(g_sSoundFiles[CSOUND_BLUETEAM_WIN], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_TRAIN);
+				MyEmitSoundToAll(g_sSoundFiles[CSOUND_BLUETEAM_WIN], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_TRAIN);
 			
 			// Stop any capturing
 			for(new c=1;c<=MaxClients;c++)

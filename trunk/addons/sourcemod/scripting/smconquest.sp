@@ -328,6 +328,11 @@ public OnMapStart()
 				KvGetString(hKV, "sound", sBuffer, sizeof(sBuffer), "-1");
 				if(!StrEqual(sBuffer, "-1"))
 				{
+					// CS:GO doesn't support flag ambience.
+					KvGetSectionName(hKV, sSection, sizeof(sSection));
+					if(StrEqual(sSection, "flag_ambience"))
+						continue;
+					
 					// It's in the sound folder
 					Format(sBuffer, sizeof(sBuffer), "sound/%s", sBuffer);
 					
@@ -391,8 +396,11 @@ public OnMapStart()
 	}
 	
 	// Have to precache radio sounds to block them
-	PrecacheSound("radio/ctwin.wav", false);
-	PrecacheSound("radio/terwin.wav", false);
+	if(!g_bIsCSGO)
+	{
+		PrecacheSound("radio/ctwin.wav", false);
+		PrecacheSound("radio/terwin.wav", false);
+	}
 	
 	PrecacheModel("models/conquest/flagv2/flag.mdl", true);
 	if(!g_bIsCSGO && GetConVarBool(g_hCVShowWinOverlays))
@@ -864,11 +872,13 @@ public Action:Event_OnRoundStart(Handle:event, const String:name[], bool:dontBro
 	}
 	
 	// Only play the sound, if the admin has set a valid file
-	if(strlen(g_sSoundFiles[CSOUND_FLAG_AMBIENCE]) == 0)
+	// CS:GO doesn't support ambient sounds yet..
+	// TODO: This needs fixing all over. Players joining after the round started don't hear the sound.
+	if(!g_bIsCSGO && strlen(g_sSoundFiles[CSOUND_FLAG_AMBIENCE]) == 0)
 		g_hStartSound = CreateTimer(3.0, Timer_OnStartSound, _, TIMER_FLAG_NO_MAPCHANGE|TIMER_REPEAT);
 	
 	if(strlen(g_sSoundFiles[CSOUND_ROUNDSTART]) > 0)
-		EmitSoundToAll(g_sSoundFiles[CSOUND_ROUNDSTART]);
+		MyEmitSoundToAll(g_sSoundFiles[CSOUND_ROUNDSTART]);
 	
 	if(g_hRemoveWeapons != INVALID_HANDLE)
 	{
@@ -1404,4 +1414,33 @@ stock MyRemoveServerTag(const String:tag[])
 	SetConVarFlags(g_hSVTags, flags & ~FCVAR_NOTIFY);
 	SetConVarString(g_hSVTags, newtags);
 	SetConVarFlags(g_hSVTags, flags);
+}
+
+// Use ClientCommand("play.. for CS:GO
+stock MyEmitSoundToAll(const String:sample[],
+				 entity = SOUND_FROM_PLAYER,
+				 channel = SNDCHAN_AUTO,
+				 level = SNDLEVEL_NORMAL,
+				 flags = SND_NOFLAGS,
+				 Float:volume = SNDVOL_NORMAL,
+				 pitch = SNDPITCH_NORMAL,
+				 speakerentity = -1,
+				 const Float:origin[3] = NULL_VECTOR,
+				 const Float:dir[3] = NULL_VECTOR,
+				 bool:updatePos = true,
+				 Float:soundtime = 0.0)
+{
+	if(g_bIsCSGO)
+	{
+		for(new i=1;i<=MaxClients;i++)
+		{
+			if(IsClientInGame(i))
+				// https://forums.alliedmods.net/showthread.php?p=1791668#post1791668
+				ClientCommand(i, "play */%s", sample); // The asterisk marks the file to be streamed, just as is automatically done with music, rather than looking it up from the audio cache.
+		}
+	}
+	else
+	{
+		EmitSoundToAll(sample, entity, channel, level, flags, volume, pitch, speakerentity, origin, dir, updatePos, soundtime);
+	}
 }

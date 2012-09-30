@@ -829,9 +829,16 @@ ParseFlagConfig()
 	}
 	ClearArray(g_hPlayersInZone);
 	
-	new String:sFile[PLATFORM_MAX_PATH], String:sMap[64];
+	new String:sFile[PLATFORM_MAX_PATH], String:sMap[64], String:sGame[10];
 	GetCurrentMap(sMap, sizeof(sMap));
-	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/smconquest/%s.cfg", sMap);
+	
+	// Get the correct map config for this game
+	if(g_bIsCSGO)
+		Format(sGame, sizeof(sGame), "csgo");
+	else
+		Format(sGame, sizeof(sGame), "css");
+		
+	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/smconquest/%s/%s.cfg", sGame, sMap);
 	
 	if(!FileExists(sFile))
 		return;

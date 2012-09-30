@@ -1322,9 +1322,16 @@ public Action:Command_Say(client, args)
 // Saves the current flag array information to the keyvalues file
 DumpFlagDataToFile()
 {
-	decl String:sConfigFile[PLATFORM_MAX_PATH], String:sMap[64];
+	decl String:sConfigFile[PLATFORM_MAX_PATH], String:sMap[64], String:sGame[10];
 	GetCurrentMap(sMap, sizeof(sMap));
-	BuildPath(Path_SM, sConfigFile, sizeof(sConfigFile), "configs/smconquest/%s.cfg", sMap);
+	
+	// Get the correct map config for this game
+	if(g_bIsCSGO)
+		Format(sGame, sizeof(sGame), "csgo");
+	else
+		Format(sGame, sizeof(sGame), "css");
+	
+	BuildPath(Path_SM, sConfigFile, sizeof(sConfigFile), "configs/smconquest/%s/%s.cfg", sGame, sMap);
 	
 	new Handle:kv = CreateKeyValues("FlagsAreas");
 	new iSize = GetArraySize(g_hFlags);

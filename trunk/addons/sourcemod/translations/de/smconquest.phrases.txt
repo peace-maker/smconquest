@@ -190,7 +190,7 @@
 	"Rotate flag"
 	{
 		// 1: Flag description
-		"de"			"Drehe Flagge \"{1}\" ...?
+		"de"			"Drehe Flagge \"{1}\" ...?"
 	}
 	"To the left"
 	{

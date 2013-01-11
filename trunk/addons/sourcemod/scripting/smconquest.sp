@@ -56,6 +56,7 @@ new Handle:g_hCVUseClasses;
 new Handle:g_hCVShowWinOverlays;
 new Handle:g_hCVEnableContest;
 new Handle:g_hCVHandicap;
+new Handle:g_hCVHandicapCountBots;
 new Handle:g_hCVCaptureScore;
 new Handle:g_hCVTeamScore;
 new Handle:g_hCVRemoveObjectives;
@@ -142,6 +143,7 @@ public OnPluginStart()
 	g_hCVShowWinOverlays = CreateConVar("sm_conquest_showwinoverlays", "1", "Should we display an overlay with the winning team logo? Don't enable this on runtime - only in config. (downloading)", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_hCVEnableContest = CreateConVar("sm_conquest_enablecontest", "1", "Should enemies interrupt the capture process when entering a zone?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_hCVHandicap = CreateConVar("sm_conquest_handicap", "1", "Should we decrease the amount of required players to the team count, if there are less players in the team than required?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_hCVHandicapCountBots = CreateConVar("sm_conquest_handicapcountbots", "1", "Should we count bots when counting the players in a team for the handicap?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_hCVCaptureScore = CreateConVar("sm_conquest_capturescore", "1", "How many frags should a player receive when conquering a flag?", FCVAR_PLUGIN, true, 0.0);
 	g_hCVTeamScore = CreateConVar("sm_conquest_teamscore", "1", "How many points should a team earn when conquering all flags?", FCVAR_PLUGIN, true, 0.0);
 	g_hCVRemoveObjectives = CreateConVar("sm_conquest_removeobjectives", "1", "Remove all bomb/hostage related stuff to prevent round end?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
@@ -1442,5 +1444,17 @@ stock MyEmitSoundToAll(const String:sample[],
 	else
 	{
 		EmitSoundToAll(sample, entity, channel, level, flags, volume, pitch, speakerentity, origin, dir, updatePos, soundtime);
+	}
+}
+
+stock GetTeamClientCountCheckBots(index)
+{
+	if(GetConVarBool(g_hCVHandicapCountBots))
+	{
+		return GetTeamClientCount(index);
+	}
+	else
+	{
+		return Team_GetClientCount(index, CLIENTFILTER_NOBOTS);
 	}
 }

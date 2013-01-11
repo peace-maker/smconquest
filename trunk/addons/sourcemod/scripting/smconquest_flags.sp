@@ -111,7 +111,7 @@ public EntOut_OnStartTouch(const String:output[], caller, activator, Float:delay
 	
 	new iTime = GetArrayCell(hFlag, FLAG_TIME);
 	
-	new iTeamCount = GetTeamClientCount(iTeam);
+	new iTeamCount = GetTeamClientCountCheckBots(iTeam);
 	
 	// Enable a team with less players as required to capture that flags
 	if(GetConVarBool(g_hCVHandicap) && iTeamCount < iRequiredPlayers)
@@ -223,7 +223,7 @@ public EntOut_OnEndTouch(const String:output[], caller, activator, Float:delay)
 		new Handle:hPlayers = GetArrayCell(g_hPlayersInZone, iIndex);
 		
 		// Get a random player out of the left over in this area and check how many players are in his team.
-		new iTeamCount = GetTeamClientCount(iOnlyTeam);
+		new iTeamCount = GetTeamClientCountCheckBots(iOnlyTeam);
 		
 		// Enable a team with less players as required to capture that flags
 		if(GetConVarBool(g_hCVHandicap) && iTeamCount < iRequiredPlayers)
@@ -302,7 +302,7 @@ public Action:Timer_OnConquerFlag(Handle:timer, any:iIndex)
 	
 	new iRequiredPlayers = GetArrayCell(hFlag, FLAG_REQPLAYERS);
 	
-	new iTeamCount = GetTeamClientCount(iTeam);
+	new iTeamCount = GetTeamClientCountCheckBots(iTeam);
 	
 	// Enable a team with less players as required to capture that flags
 	if(GetConVarBool(g_hCVHandicap) && iTeamCount < iRequiredPlayers)

@@ -190,7 +190,7 @@
 	"Rotate flag"
 	{
 		// 1: Flag description
-		"nl"			"Draai vlag \"{1}\" ...?
+		"nl"			"Draai vlag \"{1}\" ...?"
 	}
 	"To the left"
 	{

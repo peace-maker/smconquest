@@ -190,7 +190,7 @@
         "Rotate flag"
         {
                 // 1: Flag description
-                "ru"                    "Повернуть флаг \"{1}\" ...?
+                "ru"                    "Повернуть флаг \"{1}\" ...?"
         }
         "To the left"
         {

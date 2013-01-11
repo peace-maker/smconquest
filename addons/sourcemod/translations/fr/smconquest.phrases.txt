@@ -191,7 +191,7 @@
 	"Rotate flag"
 	{
 		// 1: Flag description
-		"fr"			"Pivoter le drapeau \"{1}\" ...?
+		"fr"			"Pivoter le drapeau \"{1}\" ...?"
 	}
 	"To the left"
 	{

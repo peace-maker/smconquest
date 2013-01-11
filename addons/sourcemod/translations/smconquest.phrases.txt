@@ -208,7 +208,7 @@
 	{
 		// 1: Flag description
 		"#format"		"{1:s}"
-		"en"			"Rotate flag \"{1}\" ...?
+		"en"			"Rotate flag \"{1}\" ...?"
 	}
 	"To the left"
 	{

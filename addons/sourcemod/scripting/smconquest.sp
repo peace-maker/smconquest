@@ -343,7 +343,7 @@ public OnMapStart()
 					if(!StrEqual(sSection, "1"))
 					{
 						// Does this sound exist?
-						if(!FileExists(sBuffer))
+						if(!FileExists(sBuffer, true))
 						{
 							LogError("Can't find sound \"%s\". Check your smconquest_sounds.cfg.", sBuffer);
 							continue;

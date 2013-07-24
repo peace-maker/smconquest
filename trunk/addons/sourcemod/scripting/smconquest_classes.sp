@@ -984,7 +984,7 @@ public SMCResult:ModelConfig_OnKeyValue(Handle:smc, const String:key[], const St
 		else if(StrEqual(key, "file", false))
 		{
 			// Bad file? User has to fix the file!
-			if(!FileExists(value))
+			if(!FileExists(value, true))
 				return SMCParse_HaltFail;
 			
 			// Have clients download the file

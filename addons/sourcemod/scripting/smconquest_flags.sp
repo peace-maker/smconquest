@@ -1097,32 +1097,51 @@ stock PrintHudMsg(clients[],
 				  const String:szMsg[], 
 				  any:...)
 {
-	new Handle:hBf = StartMessage("HudMsg", clients, numClients);
-		
-	BfWriteByte(hBf, channel); //channel
-	BfWriteFloat(hBf, x); // x ( -1 = center )
-	BfWriteFloat(hBf, y); // y ( -1 = center )
-	// second color
-	BfWriteByte(hBf, secondColor[0]); //r1
-	BfWriteByte(hBf, secondColor[1]); //g1
-	BfWriteByte(hBf, secondColor[2]); //b1
-	BfWriteByte(hBf, secondColor[3]); //a1 // transparent?
-	// init color
-	BfWriteByte(hBf, initColor[0]); //r2
-	BfWriteByte(hBf, initColor[1]); //g2
-	BfWriteByte(hBf, initColor[2]); //b2
-	BfWriteByte(hBf, initColor[3]); //a2
-	BfWriteByte(hBf, effect); //effect (0 is fade in/fade out; 1 is flickery credits; 2 is write out)
-	BfWriteFloat(hBf, fadeInTime); //fadeinTime (message fade in time - per character in effect 2)
-	BfWriteFloat(hBf, fadeOutTime); //fadeoutTime
-	BfWriteFloat(hBf, holdTime); //holdtime
-	BfWriteFloat(hBf, fxTime); //fxtime (effect type(2) used)
-	
 	decl String:sBuffer[512];
 	//SetGlobalTransTarget(client);
 	VFormat(sBuffer, sizeof(sBuffer), szMsg, 13);
 	
-	BfWriteString(hBf, sBuffer); //Message
+	new Handle:hBf = StartMessage("HudMsg", clients, numClients);
+	
+	if (GetFeatureStatus(FeatureType_Native, "GetUserMessageType") == FeatureStatus_Available
+		&& GetUserMessageType() == UM_Protobuf) {
+		PbSetInt(hBf, "channel", channel);
+		new Float:pos[2];
+		pos[0] = x;
+		pos[1] = y;
+		PbSetVector2D(hBf, "pos", pos);
+		PbSetColor(hBf, "clr1", secondColor);
+		PbSetColor(hBf, "clr2", initColor);
+		PbSetInt(hBf, "effect", effect);
+		PbSetFloat(hBf, "fade_in_time", fadeInTime);
+		PbSetFloat(hBf, "fade_out_time", fadeOutTime);
+		PbSetFloat(hBf, "hold_time", holdTime);
+		PbSetFloat(hBf, "fx_time", fxTime);
+		PbSetString(hBf, "text", sBuffer);
+	}
+	else
+	{
+		BfWriteByte(hBf, channel); //channel
+		BfWriteFloat(hBf, x); // x ( -1 = center )
+		BfWriteFloat(hBf, y); // y ( -1 = center )
+		// second color
+		BfWriteByte(hBf, secondColor[0]); //r1
+		BfWriteByte(hBf, secondColor[1]); //g1
+		BfWriteByte(hBf, secondColor[2]); //b1
+		BfWriteByte(hBf, secondColor[3]); //a1 // transparent?
+		// init color
+		BfWriteByte(hBf, initColor[0]); //r2
+		BfWriteByte(hBf, initColor[1]); //g2
+		BfWriteByte(hBf, initColor[2]); //b2
+		BfWriteByte(hBf, initColor[3]); //a2
+		BfWriteByte(hBf, effect); //effect (0 is fade in/fade out; 1 is flickery credits; 2 is write out)
+		BfWriteFloat(hBf, fadeInTime); //fadeinTime (message fade in time - per character in effect 2)
+		BfWriteFloat(hBf, fadeOutTime); //fadeoutTime
+		BfWriteFloat(hBf, holdTime); //holdtime
+		BfWriteFloat(hBf, fxTime); //fxtime (effect type(2) used)
+		BfWriteString(hBf, sBuffer); //Message
+	}
+	
 	EndMessage();
 }
 

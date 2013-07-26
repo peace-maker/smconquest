@@ -27,6 +27,6 @@ If have a custom HUD already, paste this block inside the Fonts section:
 			}
 		}
 
-and add the conquest.ttf ot the CustomFontFiles section:
+and add the conquest.ttf to the CustomFontFiles section:
 
 		"7"		"resource/conquest.ttf"

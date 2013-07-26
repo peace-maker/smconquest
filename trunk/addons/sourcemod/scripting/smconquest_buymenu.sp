@@ -41,7 +41,10 @@ public Menu_SelectBuyCategory(Handle:menu, MenuAction:action, param1, param2)
 		
 		if(GetConVarBool(g_hCVInBuyzone) && !g_bPlayerInBuyZone[param1])
 		{
-			PrintCenterText(param1, "#Cstrike_NotInBuyZone");
+			if(g_bIsCSGO)
+				PrintCenterText(param1, "#SFUI_BuyMenu_NotInBuyZone");
+			else
+				PrintCenterText(param1, "#Cstrike_NotInBuyZone");
 			return;
 		}
 		
@@ -77,7 +80,10 @@ public Menu_BuyItem(Handle:menu, MenuAction:action, param1, param2)
 		
 		if(GetConVarBool(g_hCVInBuyzone) && !g_bPlayerInBuyZone[param1])
 		{
-			PrintCenterText(param1, "#Cstrike_NotInBuyZone");
+			if(g_bIsCSGO)
+				PrintCenterText(param1, "#SFUI_BuyMenu_NotInBuyZone");
+			else
+				PrintCenterText(param1, "#Cstrike_NotInBuyZone");
 			return;
 		}
 		
@@ -195,7 +201,10 @@ public Action:Command_ShowBuyMenu(client, args)
 	
 	if(GetConVarBool(g_hCVInBuyzone) && !g_bPlayerInBuyZone[client])
 	{
-		PrintCenterText(client, "#Cstrike_NotInBuyZone");
+		if(g_bIsCSGO)
+			PrintCenterText(client, "#SFUI_BuyMenu_NotInBuyZone");
+		else
+			PrintCenterText(client, "#Cstrike_NotInBuyZone");
 		return Plugin_Handled;
 	}
 	

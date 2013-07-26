@@ -502,7 +502,10 @@ public OnClientPutInServer(client)
 	SDKHook(client, SDKHook_WeaponSwitch, Hook_OnWeaponSwitch);
 	SDKHook(client, SDKHook_PostThinkPost, Hook_OnPostThinkPost);
 	if(g_bIsCSGO)
-		SDKHook(client, SDKHook_ThinkPost, Hook_OnThinkPost);
+	{
+		SDKHook(client, SDKHook_PreThinkPost, Hook_OnThinkPost);
+		SDKHook(client, SDKHook_ThinkPost, Hook_OnThinkPost); // Think isn't fired for clients in csgo? Only for bots
+	}
 }
 
 public OnClientDisconnect(client)
@@ -1197,7 +1200,7 @@ public Action:Timer_OnRemoveWeapons(Handle:timer, any:data)
 		if(IsValidEntity(i)
 		&& IsValidEdict(i)
 		&& GetEdictClassname(i, sClassName, sizeof(sClassName))
-		&& StrContains(sClassName, "weapon_") != -1
+		&& StrContains(sClassName, "weapon_") == 0
 		&& GetEntPropEnt(i, Prop_Send, "m_hOwner") == -1)
 			AcceptEntityInput(i, "Kill");
 	}

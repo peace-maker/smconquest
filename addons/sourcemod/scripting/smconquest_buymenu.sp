@@ -234,8 +234,14 @@ ParseBuyConfig()
 	}
 	ClearArray(g_hBuyItemMenuArray);
 	
-	new String:sFile[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/smconquest_buymenu.cfg");
+	new String:sFile[PLATFORM_MAX_PATH], String:sGame[10];
+	
+	// Get the correct config for this game
+	if(g_bIsCSGO)
+		Format(sGame, sizeof(sGame), "csgo");
+	else
+		Format(sGame, sizeof(sGame), "css");
+	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/smconquest/%s/smconquest_buymenu.cfg", sGame);
 	
 	if(!FileExists(sFile))
 	{

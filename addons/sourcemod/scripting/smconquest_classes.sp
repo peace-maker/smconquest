@@ -571,8 +571,14 @@ ParseClassConfig()
 	}
 	ClearArray(g_hClasses);
 	
-	new String:sFile[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/smconquest_classes.cfg");
+	new String:sFile[PLATFORM_MAX_PATH], String:sGame[10];
+	
+	// Get the correct config for this game
+	if(g_bIsCSGO)
+		Format(sGame, sizeof(sGame), "csgo");
+	else
+		Format(sGame, sizeof(sGame), "css");
+	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/smconquest/%s/smconquest_classes.cfg", sGame);
 	
 	if(!FileExists(sFile))
 		return;
@@ -907,8 +913,14 @@ ParseModelConfig()
 	}
 	ClearArray(g_hModels);
 	
-	new String:sFile[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/smconquest_models.cfg");
+	new String:sFile[PLATFORM_MAX_PATH], String:sGame[10];
+	
+	// Get the correct config for this game
+	if(g_bIsCSGO)
+		Format(sGame, sizeof(sGame), "csgo");
+	else
+		Format(sGame, sizeof(sGame), "css");
+	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/smconquest/%s/smconquest_models.cfg", sGame);
 	
 	if(!FileExists(sFile))
 		return;

@@ -10,9 +10,8 @@ Install Instructions:
  1. Copy the conquest folder into your "custom" folder inside your Counter-Strike:Source folder.
   * The full path should look something like 
 	C:\Program Files\Steam\SteamApps\common\Counter-Strike Source\cstrike\custom\conquest\resource
- 2. Install the Font. (Rightclick conquest.ttf, Install)
- 3. Restart Counter-Strike: Source if you have it open.
- 4. Join a server running the SM:Conquest plugin.
+ 2. Restart Counter-Strike: Source if you have it open.
+ 3. Join a server running the SM:Conquest plugin.
 
 If have a custom HUD already, paste this block inside the Fonts section:
 
@@ -27,3 +26,7 @@ If have a custom HUD already, paste this block inside the Fonts section:
 				"antialias"	"1"
 			}
 		}
+
+and add the conquest.ttf ot the CustomFontFiles section:
+
+		"7"		"resource/conquest.ttf"

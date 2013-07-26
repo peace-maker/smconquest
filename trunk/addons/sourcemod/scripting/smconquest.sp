@@ -16,6 +16,7 @@
  * 1.2 (20.04.2011): Small hotfixes around speed and health class settings and flag adding
  * 1.3 (01.05.2011): See changelog.txt
  * 1.3.1 (28.07.2011): See changelog.txt
+ * 1.4 (26.07.2013): Added CS:GO support
  *
  * Thread: https://forums.alliedmods.net/showthread.php?t=154354
  * visit http://www.wcfan.de/
@@ -30,7 +31,7 @@
 #include <smlib>
 #include <loghelper>
 
-#define PLUGIN_VERSION "1.3.1"
+#define PLUGIN_VERSION "1.4"
 
 #define PREFIX "{olive}SM:Conquest {default}>{green} "
 
@@ -309,8 +310,14 @@ public OnMapStart()
 
 	// Game sounds
 	// Load from smconquest_sounds.cfg
-	new String:sFile[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/smconquest_sounds.cfg");
+	new String:sFile[PLATFORM_MAX_PATH], String:sGame[10];
+	
+	// Get the correct config for this game
+	if(g_bIsCSGO)
+		Format(sGame, sizeof(sGame), "csgo");
+	else
+		Format(sGame, sizeof(sGame), "css");
+	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/smconquest/%s/smconquest_sounds.cfg", sGame);
 	
 	// Clear the sounds as a base
 	for(new i=0;i<CSOUND_NUMSOUNDS;i++)

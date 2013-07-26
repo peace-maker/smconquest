@@ -840,7 +840,7 @@ ParseFlagConfig()
 	else
 		Format(sGame, sizeof(sGame), "css");
 		
-	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/smconquest/%s/%s.cfg", sGame, sMap);
+	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/smconquest/%s/maps/%s.cfg", sGame, sMap);
 	
 	if(!FileExists(sFile))
 		return;

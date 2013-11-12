@@ -521,6 +521,28 @@ public Action:Timer_OnConquerFlag(Handle:timer, any:iIndex)
 					Team_SetScore(iLastTeam, Team_GetScore(iLastTeam)+iScore);
 			}
 		}
+		
+		if(GetConVarBool(g_hCVEndGame))
+		{
+			new iGameEnd  = FindEntityByClassname(-1, "game_end");
+			if (iGameEnd == -1 && (iGameEnd = CreateEntityByName("game_end")) == -1) 
+			{
+				LogError("Unable to create entity \"game_end\"!");
+			} 
+			else 
+			{
+				AcceptEntityInput(iGameEnd, "EndGame");
+				// Have the scoreboard pop up in csgo too.
+				if(g_bIsCSGO)
+				{
+					for(new i=1;i<=MaxClients;i++)
+					{
+						if(IsClientInGame(i) && !IsFakeClient(i))
+							Client_ShowScoreboard(i);
+					}
+				}
+			}
+		}
 	}
 	
 	return Plugin_Stop;

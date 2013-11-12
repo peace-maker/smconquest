@@ -367,7 +367,12 @@ GivePlayerClassWeapons(client, iClass, iWeaponSet)
 		else
 		{
 			// Give him the weapon
-			Client_GiveWeaponAndAmmo(client, sWeapon, false, GetArrayCell(hWeaponList, i+1), -1, -1, GetArrayCell(hWeaponList, i+1));
+			new iNewWeapon = GivePlayerItem(client, sWeapon);
+			if(iNewWeapon != -1)
+			{
+				EquipPlayerWeapon(client, iNewWeapon);
+				Client_SetWeaponPlayerAmmoEx(client, iNewWeapon, GetArrayCell(hWeaponList, i+1));
+			}
 		}
 	}
 	

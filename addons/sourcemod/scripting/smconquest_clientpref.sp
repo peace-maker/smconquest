@@ -17,6 +17,9 @@ new bool:g_bUseHintStatus[MAXPLAYERS+2] = {true, ...};
 new Handle:g_hFadeClientScreen = INVALID_HANDLE;
 new bool:g_bFadeClientScreen[MAXPLAYERS+2] = {true, ...};
 
+new Handle:g_hPlaySounds = INVALID_HANDLE;
+new bool:g_bPlaySounds[MAXPLAYERS+2] = {true, ...};
+
 /**
  * Public Forwards
  */
@@ -44,6 +47,13 @@ public OnClientCookiesCached(client)
 		g_bFadeClientScreen[client] = true;
 	else
 		g_bFadeClientScreen[client] = false;
+	
+	// This one wants to hear sounds from this plugin?
+	GetClientCookie(client, g_hPlaySounds, sBuffer, sizeof(sBuffer));
+	if(strlen(sBuffer) == 0 || StrEqual(sBuffer, "1"))
+		g_bPlaySounds[client] = true;
+	else
+		g_bPlaySounds[client] = false;
 }
 
 /**
@@ -89,6 +99,13 @@ ShowSettingsMenu(client)
 			Format(sBuffer, sizeof(sBuffer), "%s%T", sBuffer, "Off", client);
 		AddMenuItem(hMenu, "fadescreen", sBuffer);
 	}
+	
+	Format(sBuffer, sizeof(sBuffer), "%T: ", "Play Plugin Sounds", client);
+	if(g_bPlaySounds[client])
+		Format(sBuffer, sizeof(sBuffer), "%s%T", sBuffer, "On", client);
+	else
+		Format(sBuffer, sizeof(sBuffer), "%s%T", sBuffer, "Off", client);
+	AddMenuItem(hMenu, "playsounds", sBuffer);
 	
 	DisplayMenu(hMenu, client, MENU_TIME_FOREVER);
 }
@@ -154,6 +171,20 @@ public Menu_SettingsMenuHandler(Handle:menu, MenuAction:action, param1, param2)
 				g_bFadeClientScreen[param1] = true;
 			}
 		}
+		// Handle the playsounds cookie
+		else if(StrEqual(info, "playsounds"))
+		{
+			if(g_bPlaySounds[param1])
+			{
+				SetClientCookie(param1, g_hPlaySounds, "0");
+				g_bPlaySounds[param1] = false;
+			}
+			else
+			{
+				SetClientCookie(param1, g_hPlaySounds, "1");
+				g_bPlaySounds[param1] = true;
+			}
+		}
 		
 		ShowSettingsMenu(param1);
 	}
@@ -168,6 +199,7 @@ CreateClientCookies()
 	g_hUseHUD = RegClientCookie("smconquest_usehud", "Show top HUD flag status? (Requires clientfix)", CookieAccess_Protected);
 	g_hUseHintStatus = RegClientCookie("smconquest_usehintstatus", "Show hint HUD flag status?", CookieAccess_Protected);
 	g_hFadeClientScreen = RegClientCookie("smconquest_fadescreen", "Fade the screen when a flag is conquered?", CookieAccess_Protected);
+	g_hPlaySounds = RegClientCookie("smconquest_playsounds", "Play sounds when a flag is conquered or the round ends?", CookieAccess_Protected);
 	
 	SetCookieMenuItem(Cookie_SettingsMenuHandler, 0, "SM:Conquest");
 }
@@ -178,4 +210,5 @@ ResetCookieCache(client)
 	g_bUseHUD[client] = true;
 	g_bUseHintStatus[client] = true;
 	g_bFadeClientScreen[client] = true;
+	g_bPlaySounds[client] = true;
 }

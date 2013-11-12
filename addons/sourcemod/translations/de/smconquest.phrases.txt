@@ -350,6 +350,10 @@
 	{
 		"de"			"Färbe den Bildschirm kurz, wenn eine Flagge erobert wird?"
 	}
+	"Play Plugin Sounds"
+	{
+		"de"			"Sollen Töne abgespielt werden, wenn die Flagge erobert oder die Runde beendet wird?"
+	}
 	"Advert !class"
 	{
 		"de"			"Schreibe {default}!class{green}, um das Klassenmenü zu öffnen und andere Klassen oder Waffensets auszuwählen."

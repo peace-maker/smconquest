@@ -70,6 +70,7 @@ new Handle:g_hCVStripLosers;
 new Handle:g_hCVAmmoLifetime;
 new Handle:g_hCVAdvertiseCommands;
 new Handle:g_hCVStripBots;
+new Handle:g_hCVEndGame;
 
 // Tag
 new Handle:g_hSVTags; 
@@ -157,6 +158,7 @@ public OnPluginStart()
 	g_hCVAmmoLifetime = CreateConVar("sm_conquest_ammolifetime", "60", "Remove dropped ammo packs after x seconds?", FCVAR_PLUGIN, true, 0.0);
 	g_hCVAdvertiseCommands = CreateConVar("sm_conquest_advertisecommands", "1", "Advertise the !class and !buy commands in chat?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_hCVStripBots = CreateConVar("sm_conquest_stripbots", "1", "Strip bots to knife and set to default class on spawn?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_hCVEndGame = CreateConVar("sm_conquest_endmap", "0", "End the whole map when a team conquers all flags instead of only one round?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	
 	g_hSVTags = FindConVar("sv_tags");
 	

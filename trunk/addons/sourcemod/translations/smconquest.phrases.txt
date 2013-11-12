@@ -386,6 +386,10 @@
 	{
 		"en"			"Fade screen shortly when a flag is conquered?"
 	}
+	"Play Plugin Sounds"
+	{
+		"en"			"Play sounds when a flag is conquered or the round ends?"
+	}
 	"Advert !class"
 	{
 		"en"			"Type {default}!class{green} to reopen the classmenu and choose a different class or weapon set."

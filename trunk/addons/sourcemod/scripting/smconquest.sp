@@ -177,7 +177,10 @@ public OnPluginStart()
 	g_hBuyItemMenuArray = CreateArray();
 	
 	// Are we running on csgo?
-	g_bIsCSGO = GuessSDKVersion() == SOURCE_SDK_CSGO;
+	if(GetFeatureStatus(FeatureType_Native, "GetEngineVersion") == FeatureStatus_Available)
+		g_bIsCSGO = GetEngineVersion() == Engine_CSGO;
+	else
+		g_bIsCSGO = GuessSDKVersion() == SOURCE_SDK_CSGO;
 	
 	g_iAccount = FindSendPropOffs("CCSPlayer", "m_iAccount");
 	if(g_iAccount == -1)
@@ -254,6 +257,7 @@ public OnPluginEnd()
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
 	RegPluginLibrary("smconquest");
+	MarkNativeAsOptional("GetEngineVersion");
 	
 	return APLRes_Success;
 }
@@ -1446,14 +1450,23 @@ stock MyEmitSoundToAll(const String:sample[],
 	{
 		for(new i=1;i<=MaxClients;i++)
 		{
-			if(IsClientInGame(i))
+			// Only play sounds to people who want to hear it.
+			if(IsClientInGame(i) && !IsFakeClient(i) && g_bPlaySounds[i])
 				// https://forums.alliedmods.net/showthread.php?p=1791668#post1791668
 				ClientCommand(i, "play */%s", sample); // The asterisk marks the file to be streamed, just as is automatically done with music, rather than looking it up from the audio cache.
 		}
 	}
 	else
 	{
-		EmitSoundToAll(sample, entity, channel, level, flags, volume, pitch, speakerentity, origin, dir, updatePos, soundtime);
+		new clients[MaxClients+1];
+		new numClients;
+		for(new i=1;i<=MaxClients;i++)
+		{
+			if(IsClientInGame(i) && !IsFakeClient(i) && g_bPlaySounds[i])
+				clients[numClients++] = i;
+		}
+		if(numClients > 0)
+			EmitSound(clients, numClients, sample, entity, channel, level, flags, volume, pitch, speakerentity, origin, dir, updatePos, soundtime);
 	}
 }
 

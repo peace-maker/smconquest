@@ -17,6 +17,7 @@
  * 1.3 (01.05.2011): See changelog.txt
  * 1.3.1 (28.07.2011): See changelog.txt
  * 1.4 (26.07.2013): Added CS:GO support
+ * 1.4.1 (19.11.2013): See changelog.txt
  *
  * Thread: https://forums.alliedmods.net/showthread.php?t=154354
  * visit http://www.wcfan.de/
@@ -31,7 +32,7 @@
 #include <smlib>
 #include <loghelper>
 
-#define PLUGIN_VERSION "1.4"
+#define PLUGIN_VERSION "1.4.1"
 
 #define PREFIX "{olive}SM:Conquest {default}>{green} "
 

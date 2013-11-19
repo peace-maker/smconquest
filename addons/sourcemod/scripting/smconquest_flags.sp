@@ -316,14 +316,14 @@ public Action:Timer_OnConquerFlag(Handle:timer, any:iIndex)
 	decl String:sBuffer[64];
 	if(iTeam == CS_TEAM_T)
 	{
-		DispatchKeyValue(iFlag, "skin", "1");
+		DispatchKeyValue(iFlag, "skin", g_FlagSkinOptions[RedFlag]);
 		if(strlen(g_sSoundFiles[CSOUND_REDFLAG_CAPTURED]) > 0)
 			MyEmitSoundToAll(g_sSoundFiles[CSOUND_REDFLAG_CAPTURED], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_TRAIN);
 		GetArrayString(hFlag, FLAG_LOGICTRIGGERT, sBuffer, sizeof(sBuffer));
 	}
 	else if(iTeam == CS_TEAM_CT)
 	{
-		DispatchKeyValue(iFlag, "skin", "2");
+		DispatchKeyValue(iFlag, "skin", g_FlagSkinOptions[BlueFlag]);
 		if(strlen(g_sSoundFiles[CSOUND_BLUEFLAG_CAPTURED]) > 0)
 			MyEmitSoundToAll(g_sSoundFiles[CSOUND_BLUEFLAG_CAPTURED], SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_TRAIN);
 		GetArrayString(hFlag, FLAG_LOGICTRIGGERCT, sBuffer, sizeof(sBuffer));
@@ -452,7 +452,7 @@ public Action:Timer_OnConquerFlag(Handle:timer, any:iIndex)
 			// Show the screen overlay of the winning team
 			if(!g_bIsCSGO && GetConVarBool(g_hCVShowWinOverlays))
 			{
-				Client_SetScreenOverlayForAll("conquest/v1/red_wins.vtf");
+				Client_SetScreenOverlayForAll(g_OverlayMaterials[m_T]);
 			}
 			// Play the winning sound
 			if(strlen(g_sSoundFiles[CSOUND_REDTEAM_WIN]) > 0)
@@ -490,7 +490,7 @@ public Action:Timer_OnConquerFlag(Handle:timer, any:iIndex)
 			// Show the screen overlay of the winning team
 			if(!g_bIsCSGO && GetConVarBool(g_hCVShowWinOverlays))
 			{
-				Client_SetScreenOverlayForAll("conquest/v1/blue_wins.vtf");
+				Client_SetScreenOverlayForAll(g_OverlayMaterials[m_CT]);
 			}
 			// Play the winning sound
 			if(strlen(g_sSoundFiles[CSOUND_BLUETEAM_WIN]) > 0)
@@ -746,7 +746,7 @@ SpawnFlag(iIndex)
 	TeleportEntity(iFlag, fVec, fAngle, NULL_VECTOR);
 	
 	// Set it's model
-	SetEntityModel(iFlag, "models/conquest/flagv2/flag.mdl");
+	SetEntityModel(iFlag, g_sFlagModelPath);
 	
 	// Set the correct skin
 	iTeam = GetArrayCell(hFlag, FLAG_DEFAULTTEAM);
@@ -755,17 +755,17 @@ SpawnFlag(iIndex)
 		case CS_TEAM_T:
 		{
 			// Red
-			DispatchKeyValue(iFlag, "skin", "1");
+			DispatchKeyValue(iFlag, "skin", g_FlagSkinOptions[RedFlag]);
 		}
 		case CS_TEAM_CT:
 		{
 			// Blue
-			DispatchKeyValue(iFlag, "skin", "2");
+			DispatchKeyValue(iFlag, "skin", g_FlagSkinOptions[BlueFlag]);
 		}
 		default:
 		{
 			// White
-			DispatchKeyValue(iFlag, "skin", "0");
+			DispatchKeyValue(iFlag, "skin", g_FlagSkinOptions[WhiteFlag]);
 		}
 	}
 	
@@ -779,8 +779,11 @@ SpawnFlag(iIndex)
 	ActivateEntity(iFlag);
 	
 	// Animate
-	SetVariantString("flag_idle1");
-	AcceptEntityInput(iFlag, "SetAnimation");
+	if(strlen(g_sFlagAnimation) > 0)
+	{
+		SetVariantString(g_sFlagAnimation);
+		AcceptEntityInput(iFlag, "SetAnimation");
+	}
 	
 	// Store the entity index
 	SetArrayCell(hFlag, FLAG_FLAGENTITY, iFlag);
@@ -808,7 +811,7 @@ SpawnFlag(iIndex)
 	ActivateEntity(iTrigger);
 	
 	TeleportEntity(iTrigger, fVec, NULL_VECTOR, NULL_VECTOR);
-	SetEntityModel(iTrigger, "models/conquest/flagv2/flag.mdl");
+	SetEntityModel(iTrigger, g_sFlagModelPath);
 	
 	GetArrayArray(hFlag, FLAG_MINS, fVec, 3);
 	SetEntPropVector(iTrigger, Prop_Send, "m_vecMins", fVec);

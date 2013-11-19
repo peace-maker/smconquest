@@ -110,6 +110,7 @@ new g_iOldIgnoreRoundWinCond;
 #define CSOUND_NUMSOUNDS 8
 new String:g_sSoundFiles[CSOUND_NUMSOUNDS][PLATFORM_MAX_PATH];
 
+#include "smconquest_models.sp"
 #include "smconquest_clientpref.sp"
 #include "smconquest_flags.sp"
 #include "smconquest_classes.sp"
@@ -270,22 +271,53 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 
 public OnMapStart()
 {
-	// Flag model
-	AddFileToDownloadsTable("models/conquest/flagv2/flag.mdl");
-	AddFileToDownloadsTable("models/conquest/flagv2/flag.dx80.vtx");
-	AddFileToDownloadsTable("models/conquest/flagv2/flag.dx90.vtx");
-	AddFileToDownloadsTable("models/conquest/flagv2/flag.phy");
-	AddFileToDownloadsTable("models/conquest/flagv2/flag.sw.vtx");
-	AddFileToDownloadsTable("models/conquest/flagv2/flag.vvd");
-	AddFileToDownloadsTable("models/conquest/flagv2/flag.xbox.vtx");
-	
-	AddFileToDownloadsTable("materials/models/conquest/flagv2/ct_flag.vmt");
-	AddFileToDownloadsTable("materials/models/conquest/flagv2/ct_flag.vtf");
-	AddFileToDownloadsTable("materials/models/conquest/flagv2/neutralflag.vmt");
-	AddFileToDownloadsTable("materials/models/conquest/flagv2/neutralflag.vtf");
-	AddFileToDownloadsTable("materials/models/conquest/flagv2/t_flag.vmt");
-	AddFileToDownloadsTable("materials/models/conquest/flagv2/t_flag.vtf");
-	
+	// Load the model config. If it fails or is missing the flag_config fall back to the default info.
+	new bool:bModelsLoaded = ParseModelConfig();
+	if(!bModelsLoaded || strlen(g_sFlagModelPath) == 0)
+	{
+		// Flag model
+		AddFileToDownloadsTable("models/conquest/flagv2/flag.mdl");
+		AddFileToDownloadsTable("models/conquest/flagv2/flag.dx80.vtx");
+		AddFileToDownloadsTable("models/conquest/flagv2/flag.dx90.vtx");
+		AddFileToDownloadsTable("models/conquest/flagv2/flag.phy");
+		AddFileToDownloadsTable("models/conquest/flagv2/flag.sw.vtx");
+		AddFileToDownloadsTable("models/conquest/flagv2/flag.vvd");
+		AddFileToDownloadsTable("models/conquest/flagv2/flag.xbox.vtx");
+		
+		AddFileToDownloadsTable("materials/models/conquest/flagv2/ct_flag.vmt");
+		AddFileToDownloadsTable("materials/models/conquest/flagv2/ct_flag.vtf");
+		AddFileToDownloadsTable("materials/models/conquest/flagv2/neutralflag.vmt");
+		AddFileToDownloadsTable("materials/models/conquest/flagv2/neutralflag.vtf");
+		AddFileToDownloadsTable("materials/models/conquest/flagv2/t_flag.vmt");
+		AddFileToDownloadsTable("materials/models/conquest/flagv2/t_flag.vtf");
+		
+		strcopy(g_sFlagModelPath, sizeof(g_sFlagModelPath), "models/conquest/flagv2/flag.mdl");
+		strcopy(g_sFlagAnimation, sizeof(g_sFlagAnimation), "flag_idle1");
+		strcopy(g_FlagSkinOptions[WhiteFlag], sizeof(g_FlagSkinOptions[WhiteFlag]), "0");
+		strcopy(g_FlagSkinOptions[RedFlag], sizeof(g_FlagSkinOptions[RedFlag]), "1");
+		strcopy(g_FlagSkinOptions[BlueFlag], sizeof(g_FlagSkinOptions[BlueFlag]), "2");
+		
+		PrecacheModel("models/conquest/flagv2/flag.mdl", true);
+	}
+	// Winning overlays fallback
+	if(!g_bIsCSGO && GetConVarBool(g_hCVShowWinOverlays))
+	{
+		if(!bModelsLoaded || strlen(g_OverlayMaterials[m_CT]) == 0)
+		{
+			
+			AddFileToDownloadsTable("materials/conquest/v1/blue_wins.vmt");
+			AddFileToDownloadsTable("materials/conquest/v1/blue_wins.vtf");
+			PrecacheDecal("conquest/v1/blue_wins.vmt", true);
+			strcopy(g_OverlayMaterials[m_CT], sizeof(g_OverlayMaterials[m_CT]), "conquest/v1/blue_wins.vtf");
+		}
+		else if(!bModelsLoaded || strlen(g_OverlayMaterials[m_T]) == 0)
+		{
+			AddFileToDownloadsTable("materials/conquest/v1/red_wins.vmt");
+			AddFileToDownloadsTable("materials/conquest/v1/red_wins.vtf");
+			PrecacheDecal("conquest/v1/red_wins.vmt", true);
+			strcopy(g_OverlayMaterials[m_T], sizeof(g_OverlayMaterials[m_T]), "conquest/v1/red_wins.vtf");
+		}
+	}
 	if(g_bIsCSGO)
 	{
 		// Ammo boxes
@@ -303,15 +335,6 @@ public OnMapStart()
 		AddFileToDownloadsTable("materials/models/items/BoxMRounds.vmt");
 		AddFileToDownloadsTable("materials/models/items/BoxSRounds.vtf");
 		AddFileToDownloadsTable("materials/models/items/BoxSRounds.vmt");
-	}
-	
-	// Winning overlays
-	if(!g_bIsCSGO && GetConVarBool(g_hCVShowWinOverlays))
-	{
-		AddFileToDownloadsTable("materials/conquest/v1/blue_wins.vmt");
-		AddFileToDownloadsTable("materials/conquest/v1/blue_wins.vtf");
-		AddFileToDownloadsTable("materials/conquest/v1/red_wins.vmt");
-		AddFileToDownloadsTable("materials/conquest/v1/red_wins.vtf");
 	}
 
 	// Game sounds
@@ -417,13 +440,6 @@ public OnMapStart()
 		PrecacheSound("radio/terwin.wav", false);
 	}
 	
-	PrecacheModel("models/conquest/flagv2/flag.mdl", true);
-	if(!g_bIsCSGO && GetConVarBool(g_hCVShowWinOverlays))
-	{
-		PrecacheDecal("conquest/v1/blue_wins.vmt", true);
-		PrecacheDecal("conquest/v1/red_wins.vmt", true);
-	}
-	
 	if(g_bIsCSGO)
 	{
 		g_iLaserMaterial = PrecacheModel("materials/sprites/laserbeam.vmt", true);
@@ -442,7 +458,6 @@ public OnMapStart()
 	PrecacheSound(AMMO_SOUND, true);
 	
 	ParseFlagConfig();
-	ParseModelConfig();
 	ParseClassConfig();
 	ParseBuyConfig();
 	

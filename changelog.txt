@@ -9,6 +9,13 @@ Legend:
 ! = Fixed bug
 ? = Other stuff
 
+(19.11.2013): Version 1.4.1
+-----------------------
+01. * Added config options to change flag model and screen overlay materials
+02. * Added sm_conquest_endmap convar to end the whole map when a team conquers all flags instead of only the current round
+03. * Added clientpref option to !settings menu to turn of sounds played by this plugin
+04. ! Fixed giving class guns in CS:GO
+
 (26.07.2013): Version 1.4
 -----------------------
 01. * Added CS:GO support. Split map configs into new folders smconquest/css and smconquest/csgo.

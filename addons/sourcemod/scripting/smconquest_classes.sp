@@ -689,9 +689,6 @@ public SMCResult:Config_OnKeyValue(Handle:smc, const String:key[], const String:
 					SetFailState("Error parsing classes. Bad value for \"team\" of \"%s\". Has to be 0 = both, 2 = T or 3 = CT.", sBuffer);
 				}
 				
-				if(GetArrayCell(hClass, CLASS_DEFAULT) == 1)
-					iBuffer = 0;
-				
 				SetArrayCell(hClass, CLASS_TEAM, iBuffer);
 			}
 			else if(StrEqual(key, "limit", false))
